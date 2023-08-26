@@ -1,0 +1,235 @@
+<?xml version="1.0"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<!DOCTYPE overlay [
+<!ENTITY % msgHdrViewPopupDTD SYSTEM "chrome://messenger/locale/msgHdrViewPopup.dtd" >
+%msgHdrViewPopupDTD;
+<!ENTITY % msgHdrViewOverlayDTD SYSTEM "chrome://messenger/locale/msgHdrViewOverlay.dtd" >
+%msgHdrViewOverlayDTD;
+]>
+
+<?xml-stylesheet href="chrome://messenger/skin/messageHeader.css" type="text/css"?>
+<?xml-stylesheet href="chrome://messenger/skin/messageKeywords.css" type="text/css"?>
+
+<overlay xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+<script type="application/javascript"
+        src="chrome://messenger/content/msgHdrViewOverlay.js"/>
+
+<!-- drag and drop -->
+<script type="application/javascript"
+        src="chrome://global/content/nsDragAndDrop.js"/>
+
+<stringbundleset id="stringbundleset">
+  <stringbundle id="bundle_messenger" src="chrome://messenger/locale/messenger.properties"/>
+</stringbundleset>
+
+<menupopup id="messageIdContext" popupanchor="bottomleft"
+       onpopupshowing="FillMessageIdContextMenu(document.popupNode);">
+  <menuitem id="messageIdContext-messageIdTarget"
+            disabled="true"/>
+  <menuseparator/>
+  <menuitem id="messageIdContext-openMessageForMsgId"
+            label="&OpenMessageForMsgId.label;"
+            accesskey="&OpenMessageForMsgId.accesskey;"
+            oncommand="var messageId = GetMessageIdFromNode(document.popupNode, true);
+                       OpenMessageForMessageId(messageId)"/>
+  <menuitem id="messageIdContext-openBrowserWithMsgId"
+            label="&OpenBrowserWithMsgId.label;"
+            accesskey="&OpenBrowserWithMsgId.accesskey;"
+            oncommand="var messageId = GetMessageIdFromNode(document.popupNode, true);
+                       OpenBrowserWithMessageId(messageId)"/>
+  <menuitem id="messageIdContext-copyMessageId"
+            label="&CopyMessageId.label;"
+            accesskey="&CopyMessageId.accesskey;"
+            oncommand="var messageId = GetMessageIdFromNode(document.popupNode, false);
+                       CopyString(messageId);"/>
+</menupopup>
+
+<menupopup id="emailAddressPopup" popupanchor="bottomleft"
+           onpopupshowing="SetupEmailAddressPopup(document.popupNode);
+                           goUpdateCommand('cmd_createFilterFromPopup');">
+  <menuitem id="emailAddressPlaceHolder" label="" disabled="true"/>
+  <menuseparator/>
+  <menuitem id="sendMailToItem"
+            label="&SendMailTo.label;"
+            accesskey="&SendMailTo.accesskey;"
+            oncommand="SendMailToNode(document.popupNode, event)"/>
+  <menuitem id="createFilterFromItem"
+            label="&CreateFilterFrom.label;"
+            accesskey="&CreateFilterFrom.accesskey;"
+            command="cmd_createFilterFromPopup"/>
+  <menuitem id="addToAddressBookItem"
+            label="&AddToAddressBook.label;"
+            accesskey="&AddToAddressBook.accesskey;"
+            oncommand="AddContact(document.popupNode);"/>
+  <menuitem id="editContactItem"
+            label="&EditContact.label;"
+            accesskey="&EditContact.accesskey;"
+            hidden="true"
+            oncommand="EditContact(document.popupNode);"/>
+  <menuitem id="viewContactItem"
+            label="&ViewContact.label;"
+            accesskey="&ViewContact.accesskey;"
+            hidden="true"
+            oncommand="EditContact(document.popupNode);"/>
+  <menuitem id="copyEmailAddressItem"
+            label="&CopyEmailAddress.label;"
+            accesskey="&CopyEmailAddress.accesskey;"
+            oncommand="CopyEmailAddress(document.popupNode)"/>
+</menupopup>
+
+<menupopup id="attachmentListContext" onpopupshowing="return onShowAttachmentContextMenu();">
+  <menuitem id="context-openAttachment" label="&openAttachmentCmd.label;" accesskey="&openAttachmentCmd.accesskey;"
+     oncommand="handleAttachmentSelection('openAttachment');"/>
+  <menuitem id="context-viewAttachment" label="&viewAttachmentCmd.label;" accesskey="&viewAttachmentCmd.accesskey;"
+     oncommand="handleAttachmentSelection('viewAttachment');"/>
+  <menuitem id="context-saveAttachment" label="&saveAsAttachmentCmd.label;" accesskey="&saveAsAttachmentCmd.accesskey;"
+     oncommand="handleAttachmentSelection('saveAttachment');"/>
+  <menuseparator/>
+  <menuitem id="context-detachAttachment" label="&detachAttachmentCmd.label;" accesskey="&detachAttachmentCmd.accesskey;"
+     oncommand="handleAttachmentSelection('detachAttachment');"/>
+  <menuitem id="context-deleteAttachment" label="&deleteAttachmentCmd.label;" accesskey="&deleteAttachmentCmd.accesskey;"
+     oncommand="handleAttachmentSelection('deleteAttachment');"/>
+  <menuseparator/>
+  <menuitem id="context-saveAllAttachments" oncommand="HandleMultipleAttachments('saveAttachment', currentAttachments);"
+    label="&saveAllAttachmentsCmd.label;" accesskey="&saveAllAttachmentsCmd.accesskey;"/>
+  <menuitem id="context-detachAllAttachments" oncommand="HandleMultipleAttachments('detachAttachment', currentAttachments);"
+    label="&detachAllAttachmentsCmd.label;" accesskey="&detachAllAttachmentsCmd.accesskey;"/>
+  <menuitem id="context-deleteAllAttachments" oncommand="HandleMultipleAttachments('deleteAttachment', currentAttachments);"
+    label="&deleteAllAttachmentsCmd.label;" accesskey="&deleteAllAttachmentsCmd.accesskey;"/>
+</menupopup>
+
+<menupopup id="attachmentMenuList">
+  <menuseparator/>
+  <menuitem id="file-saveAllAttachments" label="&saveAllAttachmentsCmd.label;"
+    accesskey="&saveAllAttachmentsCmd.accesskey;" oncommand="HandleMultipleAttachments('saveAttachment', currentAttachments);"/>
+  <menuitem id="file-detachAllAttachments" label="&detachAllAttachmentsCmd.label;"
+    accesskey="&detachAllAttachmentsCmd.accesskey;" oncommand="HandleMultipleAttachments('detachAttachment', currentAttachments);" />
+  <menuitem id="file-deleteAllAttachments" label="&deleteAllAttachmentsCmd.label;"
+    accesskey="&deleteAllAttachmentsCmd.accesskey;" oncommand="HandleMultipleAttachments('deleteAttachment', currentAttachments);" />
+</menupopup>
+
+<menupopup id="copyUrlPopup">
+  <menuitem label="&openInBrowser.label;"
+            accesskey="&openInBrowser.accesskey;"
+            oncommand="openAsExternal(document.popupNode.getAttribute('value'));"/>
+  <menuitem label="&bookmarkLinkCmd.label;"
+            accesskey="&bookmarkLinkCmd.accesskey;"
+            oncommand="BookmarkWebsite(document.popupNode);"/>
+  <menuitem label="&copyLinkCmd.label;"
+            accesskey="&copyLinkCmd.accesskey;"
+            oncommand="CopyWebsiteAddress(document.popupNode);"/>
+</menupopup>
+
+<hbox id="msgHeaderView" keywordrelated="true" originalclass="none" persist="state">
+
+<grid id="collapsedHeaderView" class="header-part1" keywordrelated="true" originalclass="header-part1" flex="1" collapsed="true">
+  <rows>
+    <row flex="1"/>
+  </rows>
+  <columns>
+    <column class="collapsedToggleHdrBox">
+      <hbox align="start">
+        <image id="toggleHeaderView" class="collapsedHeaderViewButton"
+          onclick="ToggleHeaderView();"/>
+      </hbox>
+    </column>
+
+    <column id="collapsedsubjectBox" collapsed="true" flex="1">
+      <hbox>
+        <label class="collapsedHeaderDisplayName" value="&subjectField.label;" control="collapsedsubjectValue"/>
+        <textbox id="collapsedsubjectValue" keywordrelated="true" class="collapsedHeaderValue plain" originalclass="collapsedHeaderValue plain" readonly="true" crop="right" appendoriginalclass="true" flex="1"/>
+      </hbox>
+    </column>
+
+    <column id="collapsedfromBox" flex="1">
+      <hbox align="start">
+        <mail-multi-emailHeaderField id="collapsedfromValue" class="collapsedHeaderDisplayName" label="&fromField.label;" collapsed="true" flex="1"/>
+      </hbox>
+    </column>
+
+    <column id = "collapseddateBox" collapsed="true">
+      <hbox align="start">
+        <textbox id="collapseddateValue" keywordrelated="true" class="collapsedHeaderValue plain" originalclass="collapsedHeaderValue plain" appendoriginalclass="true" readonly="true"/>
+      </hbox>
+    </column>
+
+    <column id="collapsedKeywordBox">
+      <hbox align="start">
+      <image id="collapsedKeywordImage" keywordrelated="true" originalclass="none"/>
+      </hbox>
+    </column>
+
+    <column id="collapsedAttachmentBox" collapsed="true">
+      <hbox align="start">
+      <image id="collapsedAttachment" class="collapsedAttachmentButton" onclick="ToggleHeaderView();" />
+      </hbox>
+    </column>
+  </columns>
+</grid>
+
+<hbox id="expandedHeaderView" class="header-part1" keywordrelated="true" originalclass="header-part1" flex="1" collapsed="true">
+
+  <vbox id="expandedHeaders" flex="1">
+    <mail-toggle-headerfield keywordrelated="true" id="expandedsubjectBox" class="subjectvalue" label="&subjectField.label;" ontwistyclick="ToggleHeaderView();" collapsed="true"/>
+
+    <mail-multi-emailHeaderField id="expandedfromBox" label="&fromField.label;" collapsed="true"/>
+    <mail-emailheaderfield id="expandedsenderBox" label="&senderField.label;" collapsed="true"/>
+    <mail-headerfield id="expandedorganizationBox" label="&organizationField.label;" collapsed="true"/>
+    <mail-multi-emailHeaderField id="expandedreply-toBox" label="&replyToField.label;" collapsed="true"/>
+
+    <mail-headerfield keywordrelated="true" id="expandeddateBox" label="&dateField.label;" collapsed="true"/>
+
+    <mail-multi-emailHeaderField id="expandedtoBox"  label="&toField.label;"  collapsed="true"/>
+    <mail-multi-emailHeaderField id="expandedccBox"  label="&ccField.label;"  collapsed="true"/>
+    <mail-multi-emailHeaderField id="expandedbccBox" label="&bccField.label;" collapsed="true"/>
+
+    <mail-headerfield keywordrelated="true" id="expandednewsgroupsBox" label="&newsgroupsField.label;" collapsed="true"/>
+    <mail-headerfield keywordrelated="true" id="expandedfollowup-toBox" label="&followupToField.label;" collapsed="true"/>
+    <mail-messageids-headerfield id="expandedmessage-idBox" label="&messageIdField.label;" collapsed="true"/>
+    <mail-messageids-headerfield id="expandedin-reply-toBox" label="&inReplyToField.label;" collapsed="true"/>
+    <mail-messageids-headerfield id="expandedreferencesBox" label="&referencesField.label;" collapsed="true"/>
+    <mail-tagfield id="expandedtagsBox" label="&tagsHdr.label;" collapsed="true"/>
+    <mail-urlfield id="expandedcontent-baseBox" label="&originalWebsite.label;" collapsed="true"/>
+    <mail-headerfield keywordrelated="true" id="expandeduser-agentBox"  label="&userAgentField.label;"  collapsed="true"/>
+  </vbox>
+
+  <vbox id="expandedKeywordBox">
+    <spacer flex="1"/>
+    <image id="expandedKeywordImage" keywordrelated="true" originalclass="none" />
+    <spacer flex="1"/>
+  </vbox>
+
+  <vbox id="editMessageBox" class="header-part1" keywordrelated="true" originalclass="header-part1" collapsed="true">
+    <spacer flex="1"/>
+    <button id="editMessageButton"
+            label="&editMessage.label;"
+            accesskey="&editMessage.accesskey;"
+            oncommand="MsgComposeDraftMessage()"/>
+    <spacer flex="1"/>
+  </vbox>
+
+  <vbox>
+    <spacer flex="1"/>
+    <image style="padding: 5px" id="fromBuddyIcon"/>
+    <spacer flex="1"/>
+  </vbox>
+
+  <vbox id="expandedAttachmentBox" class="header-part1" keywordrelated="true" originalclass="header-part1" collapsed="true">
+    <label id="attachmentText"
+           value="&attachmentsTree.label;"
+           accesskey="&attachmentsTree.accesskey;"
+           crop="right"
+           control="attachmentList"/>
+    <listbox id="attachmentList" rows="3" seltype="multiple"
+              onclick="attachmentListClick(event);"
+              ondragstart="nsDragAndDrop.startDrag(event,attachmentAreaDNDObserver);"
+              context="attachmentListContext"/>
+  </vbox>
+</hbox>
+</hbox>
+</overlay>

@@ -1,0 +1,27 @@
+# vim: set filetype=python:
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+BROWSER_CHROME_MANIFESTS += ['test/browser/browser.ini']
+MOCHITEST_CHROME_MANIFESTS += ['test/chrome/chrome.ini']
+MOCHITEST_MANIFESTS += ['test/mochitest/mochitest.ini']
+
+EXTRA_COMPONENTS += [
+    'nsBrowserContentHandler.js',
+    'nsTypeAheadFind.js',
+    'SuiteBrowser.manifest',
+]
+
+JAR_MANIFESTS += ['jar.mn']
+
+for var in ('MOZ_APP_NAME', 'MOZ_APP_DISPLAYNAME', 'MOZ_APP_VERSION'):
+    DEFINES[var] = '"%s"' % CONFIG[var]
+
+if CONFIG['MOZILLA_OFFICIAL']:
+    DEFINES['OFFICIAL_BUILD'] = 1
+
+JS_PREFERENCE_PP_FILES += [
+    'browser-prefs.js',
+]
+

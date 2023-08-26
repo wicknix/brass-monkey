@@ -1,0 +1,37 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+#status-bar #signed-status {
+  list-style-image: none;
+}
+
+#status-bar[signed="ok"] #signed-status {
+  list-style-image: url("chrome://messenger/skin/smime/icons/sbSignOk.gif");
+}
+
+#status-bar[signed="unknown"] #signed-status {
+  list-style-image: url("chrome://messenger/skin/smime/icons/sbSignUnknown.gif");
+}
+
+#status-bar[signed="mismatch"] #signed-status {
+  list-style-image: url("chrome://messenger/skin/smime/icons/sbSignUnknown.gif");
+}
+
+#status-bar[signed="notok"] #signed-status {
+  list-style-image: url("chrome://messenger/skin/smime/icons/sbSignNotOk.gif");
+}
+
+#status-bar #encrypted-status {
+  list-style-image: none;
+}
+
+#status-bar[encrypted="ok"] #encrypted-status {
+  list-style-image: url("chrome://messenger/skin/smime/icons/sbCryptoOk.gif");
+}
+
+#status-bar[encrypted="notok"] #encrypted-status {
+  list-style-image: url("chrome://messenger/skin/smime/icons/sbCryptoNotOk.gif");
+}

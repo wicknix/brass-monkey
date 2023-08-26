@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<?xml-stylesheet href="chrome://messenger/skin/" type="text/css"?>
+
+<?xul-overlay href="chrome://messenger/content/addressbook/abListOverlay.xul"?>
+
+<!DOCTYPE dialog SYSTEM "chrome://messenger/locale/addressbook/abMailListDialog.dtd">
+
+<dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+        id="ablistWindow"
+        onload="OnLoadEditList()"
+        ondialogaccept="return EditListOKButton();"
+        ondragover="DragOverAddressListTree(event);"
+        ondrop="DropOnAddressListTree(event);">
+
+  <stringbundleset id="stringbundleset"/>
+  <vbox id="editlist" flex="1"/>
+</dialog>

@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<!DOCTYPE overlay SYSTEM "chrome://messenger/locale/mailTasksOverlay.dtd">
+
+<overlay id="mailTasksOverlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/javascript"
+          src="chrome://messenger/content/mailTasksOverlay.js"/>
+
+  <keyset id="tasksKeys">
+    <key id="key_mail"
+         command="Tasks:Mail"
+         key="&messengerCmd.commandkey;"
+         modifiers="accel"/>
+    <key id="key_addressbook"
+         command="Tasks:AddressBook"
+         key="&addressBookCmd.commandkey;"
+         modifiers="accel"/>
+  </keyset>
+
+  <commandset id="tasksCommands">
+    <command id="Tasks:Mail" oncommand="toMessengerWindow();"/>
+    <command id="Tasks:AddressBook" oncommand="toAddressBook();"/>
+  </commandset>
+
+  <statusbarpanel id="component-bar">
+    <toolbarbutton id="mini-mail"
+                   class="taskbutton"
+                   oncommand="toMessengerWindow()"
+                   position="2"
+                   tooltiptext="&taskMessenger.tooltip;"/>
+    <toolbarbutton id="mini-comp"
+                   insertafter="mini-mail"/>
+    <toolbarbutton id="mini-addr"
+                   class="taskbutton"
+                   oncommand="toAddressBook();"
+                   insertafter="mini-comp"
+                   tooltiptext="&taskAddressBook.tooltip;"/>
+  </statusbarpanel>
+
+  <menupopup id="windowPopup">
+    <menuitem id="tasksMenuMail"
+              class="menuitem-iconic icon-mail16 menu-iconic"
+              label="&messengerCmd.label;"
+              accesskey="&messengerCmd.accesskey;"
+              key="key_mail"
+              command="Tasks:Mail"
+              insertafter="tasksMenuNavigator"/>
+    <menuitem id="tasksMenuEditor"
+              insertafter="tasksMenuMail"/>
+    <menuitem id="tasksMenuAddressBook"
+              class="menuitem-iconic icon-addressbook16 menu-iconic"
+              label="&addressBookCmd.label;"
+              accesskey="&addressBookCmd.accesskey;"
+              key="key_addressbook"
+              command="Tasks:AddressBook"
+              insertafter="tasksMenuEditor"/>
+  </menupopup>
+
+</overlay>

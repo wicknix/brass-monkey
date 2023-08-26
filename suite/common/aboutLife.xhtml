@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+  
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Life, the Universe, and Everything</title>
+
+  <script type="application/javascript">
+    function load()
+    {
+     document.getElementById("magic").textContent = Math.sqrt(1764);
+    }
+  </script>
+      
+  <style>
+    html {
+      height: 100%;
+      width: 100%;
+      background-color: #B0D8FF;
+      background-image: radial-gradient(circle closest-side, #72B9FF, #B0D8FF);
+    }
+
+    body {
+      margin: 0;
+      height: 100%;
+      width: 100%;
+      display: -moz-box;
+      -moz-box-pack: center;
+      -moz-box-align: center;
+    }
+
+    p:empty {
+      font-size: 16px;
+      color: #72B9FF;
+      text-shadow: none;
+      transform: rotate(0deg);
+    }
+
+    p {
+      font-family: arial;
+      font-weight: bold;
+      margin: 0;
+      transition-property: font-size, color, text-shadow, transform;
+      transition-duration: 6s;
+      transition-timing-function: ease;
+      font-size: 200px;
+      color: #0303E4;
+      text-shadow: #333333 3px 3px 3px;
+      transform: rotate(2160deg);
+    }
+
+    p:hover {
+      transition-duration: 1s;
+      font-size: 300px;
+      color: #2727E8;
+      transform: rotate(2520deg);
+    }
+  </style>
+    
+</head>
+
+<body onload="load();">
+  <p id="magic"/>
+</body>
+
+</html>

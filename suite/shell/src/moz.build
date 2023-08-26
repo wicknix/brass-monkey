@@ -1,0 +1,27 @@
+# vim: set filetype=python:
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+if CONFIG['OS_ARCH'] == 'WINNT':
+    SOURCES += ['nsWindowsShellService.cpp']
+    OS_LIBS += [
+        'ole32',
+        'version',
+        'uuid',
+        'shell32',
+    ]
+elif CONFIG['MOZ_WIDGET_TOOLKIT'] == 'cocoa':
+    SOURCES += ['nsMacShellService.cpp']
+elif 'gtk' in CONFIG['MOZ_WIDGET_TOOLKIT']:
+    SOURCES += ['nsGNOMEShellService.cpp']
+
+if SOURCES:
+    EXTRA_COMPONENTS += [
+        'nsSetDefault.js',
+        'nsSetDefault.manifest',
+    ]
+
+FINAL_LIBRARY = 'suite'
+
+CXXFLAGS += CONFIG['TK_CFLAGS']

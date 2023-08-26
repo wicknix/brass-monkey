@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+
+<!-- platform specific commands -->
+<?xul-overlay href="chrome://navigator/content/platformMailOverlay.xul"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://messenger/locale/mailOverlay.dtd">
+<overlay id="mailOverlay.xul"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/javascript" src="chrome://messenger/content/mailOverlay.js"/>
+
+  <!-- generic commands -->
+  <commandset id="tasksCommands">
+    <command id="cmd_newMessage" oncommand="goOpenNewMessage();"/>
+    <command id="cmd_newCard" oncommand="openNewCardDialog()"/>
+  </commandset>
+  <menuitem id="menu_newCard" label="&newContactCmd.label;"
+            accesskey="&newContactCmd.accesskey;" command="cmd_newCard"/>
+  <menuitem id="menu_newMessage" label="&newMessageCmd.label;" accesskey="&newMessageCmd.accesskey;" key="key_newMessage" command="cmd_newMessage"/>
+  <keyset id="tasksKeys">
+    <key id="key_newMessage"   key="&newMessageCmd.key;" command="cmd_newMessage" modifiers="accel"/>
+  </keyset>
+
+  <toolbarbutton id="print-button"
+                 label="&printButton.label;"
+                 tooltiptext="&printButton.tooltip;"/>
+</overlay>

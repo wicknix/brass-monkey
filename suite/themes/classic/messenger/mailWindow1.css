@@ -1,0 +1,149 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* ===== mailWindow1.css ================================================
+  == Styles for the main Mail window in the default layout scheme.
+  ======================================================================= */
+
+@import url("chrome://messenger/skin/");
+@import url("chrome://messenger/skin/primaryToolbar.css");
+@import url("chrome://messenger/skin/folderMenus.css");
+
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+/* :::::
+   :: Make sure the min height is small so we can
+   :: resize the pane vertically -EDV
+   ::::: */
+
+#messagepanebox {
+  min-height: 10px;
+  height: 0px;
+}
+
+/* ..... folder pane adjustments ..... */
+
+.folderview-cycler > .toolbarbutton-text {
+  display: none;
+}
+
+.folderview-cycler > .toolbarbutton-icon {
+  margin: 0px;
+}
+
+.folderview-cycler[dir="prev"],
+.folderview-cycler[dir="next"]:-moz-locale-dir(rtl) {
+  list-style-image: url("chrome://global/skin/arrow/arrow-lft.gif");
+}
+
+.folderview-cycler[dir="next"],
+.folderview-cycler[dir="prev"]:-moz-locale-dir(rtl) {
+  list-style-image: url("chrome://global/skin/arrow/arrow-rit.gif");
+}
+
+/* ::::: border adjustments for focus ring and joined splitters ::::: */
+
+/* ..... splitter adjustments ..... */
+
+#folderpane-splitter {
+  border-right: none;
+  border-bottom: none;
+  border-left: none;
+  min-width: 5px;
+}
+
+#threadpane-splitter {
+  border: none;
+  min-height: 5px;
+}
+
+#threadpane-splitter[state="collapsed"] {
+  border-bottom: 2px solid;
+}
+
+/* ..... tree adjustments ..... */
+
+#folderTree {
+  border-right: 1px solid;
+  -moz-border-right-colors: ThreeDShadow;
+  min-width: 1px;
+}
+
+#threadTree {
+  border-bottom: 2px solid;
+  -moz-border-bottom-colors: ThreeDHighlight ThreeDLightShadow;
+  min-width: 1px;
+}
+
+#threadTree,
+#accountCentralBox {
+  border-left: 2px solid;
+  -moz-border-left-colors: ThreeDShadow ThreeDDarkShadow;
+}
+
+#locationIcon {
+  list-style-image: none;
+}
+
+/* ..... message pane adjustments ..... */
+
+#messagepanebox {
+ border-top: 2px solid;
+ border-left: 2px solid;
+ -moz-border-top-colors: ThreeDShadow ThreeDDarkShadow;
+ -moz-border-left-colors: ThreeDShadow ThreeDDarkShadow;
+}
+
+#msgHeaderView {
+  border-left: none !important;
+}
+
+#messagepane {
+  border: 1px solid -moz-Field;
+  border-right: none;
+}
+
+#messagepanebox[focusring="true"] > #messagepanewrapper > #messagepane {
+  border-color: #000000;
+}
+
+/* ..... tabmail ..... */
+
+tabpanels {
+  /* don't draw tabpanel borders; see also tabbrowser.css */
+  -moz-appearance: none;
+}
+
+.tab-close-button {
+  margin: 0;
+}
+
+.tabmail-tab[type="message"] .tab-icon {
+  margin-top: -2px;
+}
+
+.tabmail-tab[type="folder"][NewMessages="true"],
+.tabmail-tab[type="folder"][IsServer="true"],
+.alltabs-item[selected="true"] {
+  font-weight: bold;
+}
+
+.tabmail-tab:-moz-lwtheme:not([selected="true"]) {
+  opacity: .8;
+}
+
+.tabmail-tab:-moz-lwtheme {
+  text-shadow: none;
+}
+
+.alltabs-item[tabIsScrolled] {
+  font-style: italic;
+}
+
+#tabbar-toolbar {
+  -moz-appearance: none;
+  border-top-style: none;
+  border-bottom-style: none;
+  min-height: 0;
+}

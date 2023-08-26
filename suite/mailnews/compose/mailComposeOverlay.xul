@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<overlay id="mailComposeOverlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <menupopup id="menu_EditPopup" onpopupshowing="updateEditItems();">
+    <menuitem id="menu_pasteQuote"
+              insertafter="menu_pasteNoFormatting"
+              key="pastequotationkb"
+              command="cmd_pasteQuote"/>
+    <menuitem id="menu_rewrap"
+              insertafter="menu_pasteQuote"
+              key="key_rewrap"
+              command="cmd_rewrap"/>
+    <menuitem id="menu_inlineSpellCheck"
+              oncommand="EnableInlineSpellCheck(!InlineSpellCheckerUI.enabled);"/>
+    <menuitem id="menu_accountmgr"
+              insertafter="sep_preferences"
+              command="cmd_account"/>
+  </menupopup>
+</overlay>

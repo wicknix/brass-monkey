@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+
+<!DOCTYPE dialog SYSTEM "chrome://communicator/locale/permissions/permissionsManager.dtd" >
+
+<dialog id="permissionsManager"
+        buttons="accept,cancel,help"
+        windowtype="exceptions"
+        title="&windowtitle.label;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        style="width:32em; height:42em;"
+        persist="width height screenX screenY"
+        onload="Startup();"
+        ondialogaccept="return onAccept();"
+        ondialoghelp="return doHelpButton();">
+
+  <script type="application/javascript" src="chrome://communicator/content/permissions/permissionsManager.js"/>
+  <script type="application/javascript" src="chrome://communicator/content/permissions/treeUtils.js"/>
+  <script type="application/javascript" src="chrome://help/content/contextHelp.js"/>
+
+  <stringbundle id="permissionsBundle"
+                src="chrome://communicator/locale/permissions/permissionsManager.properties"/>
+
+  <description id="permissionsText"/>
+  <separator class="thin"/>
+  <label id="urlLabel"
+         value="&address.label;"
+         accesskey="&address.accesskey;"
+         control="url"/>
+  <hbox align="start">
+    <textbox id="url" flex="1" oninput="handleHostInput(event.target);"/>
+  </hbox>
+  <hbox pack="end">
+     <button id="btnBlock" disabled="true" accesskey="&block.accesskey;"
+             label="&block.label;" oncommand="addPermission(nsIPermissionManager.DENY_ACTION);"/>
+     <button id="btnSession" disabled="true" accesskey="&session.accesskey;"
+             label="&session.label;" oncommand="addPermission(nsICookiePermission.ACCESS_SESSION);"/>
+     <button id="btnAllow" disabled="true" accesskey="&allow.accesskey;"
+             label="&allow.label;" oncommand="addPermission(nsIPermissionManager.ALLOW_ACTION);"/>
+  </hbox>
+  <separator class="thin"/>
+  <tree id="permissionsTree" flex="1" style="height: 18em;"
+        hidecolumnpicker="true"
+        onkeypress="handlePermissionKeyPress(event)"
+        onselect="permissionSelected();"
+        sortAscending="false"
+        sortColumn="rawHost"
+        persist="sortAscending sortColumn">
+    <treecols>
+      <treecol id="siteCol" label="&treehead.sitename.label;" flex="3"
+                    onclick="permissionColumnSort('rawHost', true);" persist="width"/>
+      <splitter class="tree-splitter"/>
+      <treecol id="statusCol" label="&treehead.status.label;" flex="1"
+                    onclick="permissionColumnSort('capability', true);" persist="width"/>
+    </treecols>
+    <treechildren/>
+  </tree>
+  <separator class="thin"/>
+  <hbox>
+    <button id="removePermission" disabled="true"
+            label="&remove.label;" accesskey="&remove.accesskey;"
+            oncommand="deletePermissions();"/>
+    <button id="removeAllPermissions"
+            label="&removeall.label;" accesskey="&removeall.accesskey;"
+            oncommand="deleteAllPermissions();"/>
+  </hbox>
+</dialog>

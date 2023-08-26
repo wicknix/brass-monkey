@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://messenger/skin/messenger.css" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://messenger/locale/addressbook/pref-addressing.dtd">
+
+<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <prefpane id="addressing_pane" label="&pref.addressing.title;"
+            script="chrome://messenger/content/addressbook/pref-addressing.js">
+
+    <stringbundle id="bundle_addressBook"
+                  src="chrome://messenger/locale/addressbook/addressBook.properties"/>
+
+    <preferences id="addressing_preferences">
+      <preference id="mail.collect_email_address_outgoing"
+                  name="mail.collect_email_address_outgoing"
+                  type="bool"/>
+      <preference id="mail.collect_addressbook"
+                  name="mail.collect_addressbook"
+                  type="string"/>
+      <preference id="mail.autoComplete.highlightNonMatches"
+                  name="mail.autoComplete.highlightNonMatches"
+                  type="bool"/>
+      <preference id="mail.enable_autocomplete"
+                  name="mail.enable_autocomplete"
+                  type="bool"/>
+      <preference id="ldap_2.autoComplete.useDirectory"
+                  name="ldap_2.autoComplete.useDirectory"
+                  onchange="enableAutocomplete();" type="bool"/>
+      <preference id="ldap_2.autoComplete.directoryServer"
+                  name="ldap_2.autoComplete.directoryServer"
+                  type="string"/>
+      <preference id="pref.ldap.disable_button.edit_directories"
+                  name="pref.ldap.disable_button.edit_directories"
+                  type="bool"/>
+    </preferences>
+
+    <groupbox>
+      <caption label="&emailCollectiontitle.label;"/>
+      <description>&emailCollectiontext.label;</description>
+      <hbox align="center">
+        <checkbox id="emailCollectionOutgoing"
+                  label="&emailCollectionPicker.label;"
+                  accesskey="&emailCollectionPicker.accesskey;"
+                  preference="mail.collect_email_address_outgoing"/>
+        <menulist id="localDirectoriesList" flex="1"
+                  aria-labelledby="emailCollectionOutgoing"
+                  preference="mail.collect_addressbook">
+          <menupopup id="localDirectoriesPopup" class="addrbooksPopup"
+                     localonly="true" writable="true"/>
+        </menulist>
+      </hbox>
+    </groupbox>
+    <groupbox id="addressAutocompletion">
+      <caption label="&addressingTitle.label;"/>
+      <hbox align="center">
+        <checkbox id="highlightNonMatches" label="&highlightNonMatches.label;"
+                  preference="mail.autoComplete.highlightNonMatches"
+                  accesskey="&highlightNonMatches.accesskey;"/>
+      </hbox>
+
+      <separator class="thin"/>
+
+      <description>&autocompleteText.label;</description>
+      <hbox align="center">
+        <checkbox id="addressingAutocomplete" label="&addressingEnable.label;"
+                  preference="mail.enable_autocomplete"
+                  accesskey="&addressingEnable.accesskey;"/>
+      </hbox>
+      <hbox align="center">
+        <checkbox id="autocompleteLDAP" label="&directories.label;"
+                  preference="ldap_2.autoComplete.useDirectory"
+                  accesskey="&directories.accesskey;"/>
+        <menulist id="directoriesList" flex="1"
+                  aria-labelledby="autocompleteLDAP"
+                  preference="ldap_2.autoComplete.directoryServer">
+          <menupopup id="directoriesListPopup" class="addrbooksPopup"
+                     none="&directoriesNone.label;"
+                     remoteonly="true" value="dirPrefId"/>
+        </menulist>
+        <button id="editButton" label="&editDirectories.label;"
+                oncommand="onEditDirectories();"
+                accesskey="&editDirectories.accesskey;"
+                preference="pref.ldap.disable_button.edit_directories"/>
+      </hbox>
+    </groupbox>
+  </prefpane>
+</overlay>

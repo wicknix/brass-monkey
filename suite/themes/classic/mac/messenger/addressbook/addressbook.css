@@ -1,0 +1,382 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* ===== addressbook.css ================================================
+  == Styles for the main Address Book window.
+  ======================================================================= */
+
+@import url("chrome://messenger/skin/");
+
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+@namespace html url("http://www.w3.org/1999/xhtml");
+
+#addressbookWindow {
+  -moz-appearance: none;
+  background-color: #EEEEEE;
+}
+
+/* ::::: primary toolbar buttons ::::: */
+
+#button-newcard {
+  list-style-image: url("chrome://messenger/skin/addressbook/icons/addressbookicons.png");
+  -moz-image-region: rect(60px 29px 89px 0);
+}
+
+#button-newcard:hover:active  {
+  -moz-image-region: rect(60px 59px 89px 30px);
+} 
+
+#button-newcard[disabled]{
+  -moz-image-region: rect(60px 89px 89px 60px) !important;
+}
+
+#button-newlist {
+  list-style-image: url("chrome://messenger/skin/addressbook/icons/addressbookicons.png");
+  -moz-image-region: rect(90px 29px 119px 0);
+}
+
+#button-newlist:hover:active {
+  -moz-image-region: rect(90px 59px 119px 30px);
+} 
+
+#button-newlist[disabled] {
+  -moz-image-region: rect(90px 89px 119px 60px) !important;
+}
+
+#button-editcard {
+  list-style-image: url("chrome://messenger/skin/addressbook/icons/addressbookicons.png");
+  -moz-image-region: rect(30px 29px 59px 0);
+}
+
+#button-editcard:hover:active {
+  -moz-image-region: rect(30px 59px 59px 30px);
+} 
+
+#button-editcard[disabled] {
+  -moz-image-region: rect(30px 89px 59px 60px) !important;
+}
+
+#button-newmessage {
+  list-style-image: url("chrome://messenger/skin/icons/messengericons.png");
+  -moz-image-region: rect(150px 29px 179px 0);
+}
+
+#button-newmessage:hover:active {
+  -moz-image-region: rect(150px 59px 179px 30px);
+} 
+
+#button-newmessage[disabled]{
+  -moz-image-region: rect(150px 89px 179px 60px) !important;
+} 
+
+#button-newim {
+  list-style-image: url("chrome://messenger/skin/addressbook/icons/addressbookicons.png");
+  -moz-image-region: rect(120px 29px 149px 0);
+}
+
+#button-newim:hover:active {
+  -moz-image-region: rect(120px 59px 149px 30px);
+} 
+
+#button-newim[disabled] {
+  -moz-image-region: rect(120px 89px 149px 60px) !important;
+}
+
+#button-abdelete {
+  list-style-image: url("chrome://messenger/skin/addressbook/icons/addressbookicons.png");
+  -moz-image-region: rect(0 29px 29px 0);
+}
+
+#button-abdelete:hover:active  {
+  -moz-image-region: rect(0 59px 29px 30px);
+} 
+
+#button-abdelete[disabled] {
+  -moz-image-region: rect(0 89px 29px 60px) !important;
+}
+
+/* ::::: small primary toolbar buttons ::::: */
+
+toolbar[iconsize="small"] > #button-newcard,
+toolbar[iconsize="small"] > toolbarpaletteitem > #button-newcard {
+  list-style-image: url("chrome://messenger/skin/addressbook/icons/addressbookicons-small.png");
+  -moz-image-region: rect(40px 19px 59px 0);
+}
+
+toolbar[iconsize="small"] > #button-newcard:hover:active {
+  -moz-image-region: rect(40px 39px 59px 20px);
+}
+
+toolbar[iconsize="small"] > #button-newcard[disabled] {
+  -moz-image-region: rect(40px 59px 59px 40px) !important;
+}
+
+toolbar[iconsize="small"] > #button-newlist,
+toolbar[iconsize="small"] > toolbarpaletteitem > #button-newlist {
+  list-style-image: url("chrome://messenger/skin/addressbook/icons/addressbookicons-small.png");
+  -moz-image-region: rect(60px 19px 79px 0);
+}
+
+toolbar[iconsize="small"] > #button-newlist:hover:active {
+  -moz-image-region: rect(60px 39px 79px 20px);
+}
+
+toolbar[iconsize="small"] > #button-newlist[disabled] {
+  -moz-image-region: rect(60px 59px 79px 40px) !important;
+}
+
+toolbar[iconsize="small"] > #button-editcard,
+toolbar[iconsize="small"] > toolbarpaletteitem > #button-editcard {
+  list-style-image: url("chrome://messenger/skin/addressbook/icons/addressbookicons-small.png");
+  -moz-image-region: rect(20px 19px 39px 0);
+}
+
+toolbar[iconsize="small"] > #button-editcard:hover:active {
+  -moz-image-region: rect(20px 39px 39px 20px);
+}
+
+toolbar[iconsize="small"] > #button-editcard[disabled] {
+  -moz-image-region: rect(20px 59px 39px 40px) !important;
+}
+
+toolbar[iconsize="small"] > #button-newmessage,
+toolbar[iconsize="small"] > toolbarpaletteitem > #button-newmessage {
+  list-style-image: url("chrome://messenger/skin/icons/messengericons-small.png");
+  -moz-image-region: rect(100px 19px 119px 0);
+}
+
+toolbar[iconsize="small"] > #button-newmessage:hover:active {
+  -moz-image-region: rect(100px 39px 119px 20px);
+}
+
+toolbar[iconsize="small"] > #button-newmessage[disabled] {
+  -moz-image-region: rect(100px 59px 119px 40px) !important;
+}
+
+toolbar[iconsize="small"] > #button-newim,
+toolbar[iconsize="small"] > toolbarpaletteitem > #button-newim {
+  list-style-image: url("chrome://messenger/skin/addressbook/icons/addressbookicons-small.png");
+  -moz-image-region: rect(80px 19px 99px 0);
+}
+
+toolbar[iconsize="small"] > #button-newim:hover:active {
+  -moz-image-region: rect(80px 39px 99px 20px);
+}
+
+toolbar[iconsize="small"] > #button-newim[disabled] {
+  -moz-image-region: rect(80px 59px 99px 40px) !important;
+}
+
+toolbar[iconsize="small"] > #button-abdelete,
+toolbar[iconsize="small"] > toolbarpaletteitem > #button-abdelete {
+  list-style-image: url("chrome://messenger/skin/addressbook/icons/addressbookicons-small.png");
+  -moz-image-region: rect(0 19px 19px 0);
+}
+
+toolbar[iconsize="small"] > #button-abdelete:hover:active {
+  -moz-image-region: rect(0 39px 19px 20px);
+}
+
+toolbar[iconsize="small"] > #button-abdelete[disabled] {
+  -moz-image-region: rect(0 59px 19px 40px) !important;
+}
+
+#results-splitter {
+  background-color: -moz-dialog;
+  border-top: 1px solid #A5A5A5;
+  border-bottom: 1px solid #A5A5A5;
+}
+
+#dirTree-splitter {
+  border: solid #B3B3B3;
+  border-width: 0 1px 0 0;
+  background-image: none;
+  min-width: 1px;
+}
+
+/* Make sure users find the splitter when it's collapsed... */
+
+#dirTree-splitter[state="collapsed"] {
+  min-width: 5px;
+  background-color: #D6DDE5;
+}
+
+#dirTree {
+  -moz-appearance: -moz-mac-source-list;
+}
+
+.tree-stack > .tree-rows > .tree-bodybox {
+  border: none;
+}
+
+#dirTree > treechildren::-moz-tree-row {
+  background-color: transparent;
+}
+
+#dirTree > treechildren::-moz-tree-row(selected) {
+  -moz-appearance: -moz-mac-source-list-selection;
+}
+
+#dirTree > treechildren::-moz-tree-row(selected, focus) {
+  -moz-appearance: -moz-mac-active-source-list-selection;
+}
+
+#dirTree > treechildren::-moz-tree-cell-text(selected) {
+  color: #FFFFFF;
+}
+
+#dirTree > treechildren::-moz-tree-twisty {
+  width: 16px;
+  -moz-appearance: none;
+  padding-bottom: 1px;
+  padding-inline-end: 4px;
+  list-style-image: url("chrome://global/skin/tree/arrow-disclosure.svg#arrow-disclosure-collapsed");
+}
+
+#dirTree > treechildren::-moz-tree-twisty(closed, selected) {
+  list-style-image: url("chrome://global/skin/tree/arrow-disclosure.svg#arrow-disclosure-collapsed-inverted");
+}
+
+#dirTree > treechildren::-moz-tree-twisty(open) {
+  list-style-image: url("chrome://global/skin/tree/arrow-disclosure.svg#arrow-disclosure-expanded");
+}
+
+#dirTree > treechildren::-moz-tree-twisty(open, selected) {
+  list-style-image: url("chrome://global/skin/tree/arrow-disclosure.svg#arrow-disclosure-expanded-inverted");
+}
+
+#dirTree > treechildren:-moz-locale-dir(rtl)::-moz-tree-twisty(closed) {
+  list-style-image: url("chrome://global/skin/tree/arrow-disclosure.svg#arrow-disclosure-collapsed-rtl");
+}
+
+#dirTree > treechildren:-moz-locale-dir(rtl)::-moz-tree-twisty(closed, selected) {
+  list-style-image: url("chrome://global/skin/tree/arrow-disclosure.svg#arrow-disclosure-collapsed-inverted-rtl");
+}
+
+@media (-moz-mac-yosemite-theme) {
+  #dirTree > treechildren::-moz-tree-cell-text(selected) {
+    color: -moz-dialogtext;
+  }
+
+  #dirTree > treechildren::-moz-tree-cell-text(selected, focus) {
+    color: #FFFFFF;
+  }
+
+  #dirTree > treechildren::-moz-tree-twisty(closed, selected) {
+    list-style-image: url("chrome://global/skin/tree/arrow-disclosure.svg#arrow-disclosure-collapsed");
+  }
+
+  #dirTree > treechildren::-moz-tree-twisty(closed, selected, focus) {
+    list-style-image: url("chrome://global/skin/tree/arrow-disclosure.svg#arrow-disclosure-collapsed-inverted");
+  }
+
+  #dirTree > treechildren::-moz-tree-twisty(open, selected) {
+    list-style-image: url("chrome://global/skin/tree/arrow-disclosure.svg#arrow-disclosure-expanded");
+  }
+
+  #dirTree > treechildren::-moz-tree-twisty(open, selected, focus) {
+    list-style-image: url("chrome://global/skin/tree/arrow-disclosure.svg#arrow-disclosure-expanded-inverted");
+  }
+
+  #dirTree > treechildren:-moz-locale-dir(rtl)::-moz-tree-twisty(closed, selected) {
+    list-style-image: url("chrome://global/skin/tree/arrow-disclosure.svg#arrow-disclosure-collapsed-rtl");
+  }
+
+  #dirTree > treechildren:-moz-locale-dir(rtl)::-moz-tree-twisty(closed, selected, focus) {
+    list-style-image: url("chrome://global/skin/tree/arrow-disclosure.svg#arrow-disclosure-collapsed-inverted-rtl")
+  }
+}
+
+#DirCol {
+  -moz-appearance: none;
+  border: none;
+  background-color: transparent;
+}
+
+#DirCol > .treecol-text {
+  padding: 6px 0 6px 8px;
+  font-weight: bold;
+  color: #738193;
+}
+
+/* CardView styles - used in the Card View Pane */
+ 
+#CardViewBox {
+  -moz-user-focus: ignore;
+  overflow: auto;
+  min-width: 150px;
+  background-color: #FFFFFF;
+}
+
+#CardViewInnerBox {
+  margin-top: 2px;
+  margin-bottom: 2px;
+  padding: 0 8px;
+}
+
+#CardTitle {
+  font-size: 150%;
+  font-weight: bold;
+  border-bottom: 2px solid black;
+  min-width: 120px;
+  margin: 0px;
+}
+ 
+.cardViewGroup {
+  margin-top: 8px;
+  padding-bottom: 5px;
+  min-width: 50px;
+}
+
+.CardViewHeading {
+  padding: 1px;
+  padding-inline-start: 5px;
+  margin: 0px 0px 1px;
+  background-color: -moz-dialog;
+  color: black;
+  font-weight: bold;
+  min-width: 30px;
+}
+
+#cvBuddyIcon {
+  padding-inline-start: 20px;
+  padding-top: 2px;
+}
+
+.CardViewText,
+.CardViewLink {
+  padding-inline-start: 20px;
+  padding-inline-end: 2px;
+  min-width: 30px;
+  margin: 0px;
+}
+
+.CardViewLink {
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+
+#cvHomeMapIt, #cvWorkMapIt {
+  margin-bottom: 0px;
+}
+
+html|a {
+  padding-inline-start: 0px;
+  padding-inline-end: 2px;
+  border: none !important;
+}
+
+html|p {
+  border: none !important;
+}
+
+/* ::::: lightweight themes ::::: */
+
+#CardViewOuterBox:-moz-lwtheme {
+  background-color: -moz-dialog;
+  color: -moz-dialogtext;
+  text-shadow: none
+}

@@ -1,0 +1,207 @@
+<?xml version="1.0"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<!-- CHANGE THIS WHEN MOVING FILES -->
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+
+<!-- CHANGE THIS WHEN MOVING FILES -->
+<!DOCTYPE dialog SYSTEM "chrome://communicator/locale/permissions/cookieViewer.dtd" >
+
+<dialog id="cookieviewer"
+        buttons="help"
+        title="&windowtitle.label;"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        windowtype="mozilla:cookieviewer"
+        style="width: 65ch; height: 42em;"
+        onload="Startup()"
+        onunload="Shutdown()"
+        ondialoghelp="doHelpButton();"
+        persist="screenX screenY width height">
+
+  <script type="application/javascript"
+          src="chrome://communicator/content/permissions/cookieViewer.js"/>
+  <script type="application/javascript"
+          src="chrome://communicator/content/permissions/treeUtils.js"/>
+  <script type="application/javascript"
+          src="chrome://help/content/contextHelp.js" />
+
+  <keyset id="dialogKeys">
+    <key key="&focusSearch.key;"
+         modifiers="accel"
+         oncommand="focusFilterBox();"/>
+    <key key="&selectAll.key;"
+         modifiers="accel"
+         oncommand="doSelectAll();"/>
+  </keyset>
+  <stringbundle id="cookieBundle"
+                src="chrome://communicator/locale/permissions/cookieViewer.properties"/>
+
+  <tabbox id="tabbox" flex="1">
+    <tabs>
+      <tab id="cookiesTab" label="&tab.cookiesonsystem.label;" help="cookies_stored"/>
+      <tab id="permissionsTab" label="&tab.bannedservers.label;" help="cookie_sites"/>
+    </tabs>
+    <tabpanels id="panel" flex="1">
+      <vbox class="tabpanel" id="system" flex="1">
+        <vbox id="dummyContainer" flex="1">
+          <!-- filter -->
+          <hbox align="center">
+            <textbox id="filter"
+                     flex="1"
+                     type="search"
+                     aria-controls="cookiesTree"
+                     placeholder="&search.placeholder;"
+                     oncommand="filter(this.value);"/>
+          </hbox>
+          <separator class="thin"/>
+          <label value="&div.cookiesonsystem.label;" control="cookiesTree"/>
+          <separator class="thin"/>
+          <tree id="cookiesTree" flex="1" style="height: 10em;"
+                    onkeypress="HandleCookieKeyPress(event)"
+                    onselect="CookieSelected();">
+            <treecols>
+              <treecol id="domainCol" label="&treehead.cookiedomain.label;" flex="5"
+                       onclick="CookieColumnSort('rawHost', true);" persist="width hidden"
+                       sortDirection="ascending"/>
+              <splitter class="tree-splitter"/>
+              <treecol id="nameCol" label="&treehead.cookiename.label;" flex="5"
+                       onclick="CookieColumnSort('name', true);" persist="width hidden"/>
+              <splitter class="tree-splitter"/>
+              <treecol id="expiresCol" label="&treehead.cookieexpires.label;" flex="10"
+                       hidden="true" onclick="CookieColumnSort('expires', true);" persist="width hidden"/>
+            </treecols>
+            <treechildren/>
+          </tree>
+          <groupbox>
+            <caption label="&treehead.infoselected.label;"/>
+            <!-- labels -->
+            <grid flex="1">
+              <columns>
+                <column/>
+                <column flex="1"/>
+              </columns>
+              <rows>
+
+                <row align="center">
+                  <hbox align="center" pack="end">
+                    <label value="&props.name.label;" control="ifl_name"/>
+                  </hbox>
+                  <textbox id="ifl_name" readonly="true" class="plain"/>
+                </row>
+
+                <row align="center">
+                  <hbox align="center" pack="end">
+                    <label value="&props.value.label;" control="ifl_value"/>
+                  </hbox>
+                  <textbox id="ifl_value" readonly="true" class="plain"/>
+                </row>
+
+                <row align="center">
+                  <hbox align="center" pack="end">
+                    <label id="ifl_isDomain" value="&props.domain.label;" control="ifl_host"/>
+                  </hbox>
+                  <textbox id="ifl_host" readonly="true" class="plain"/>
+                </row>
+
+                <row align="center">
+                  <hbox align="center" pack="end">
+                    <label value="&props.path.label;" control="ifl_path"/>
+                  </hbox>
+                  <textbox id="ifl_path" readonly="true" class="plain"/>
+                </row>
+
+                <row align="center">
+                  <hbox align="center" pack="end">
+                    <label value="&props.secure.label;" control="ifl_isSecure"/>
+                  </hbox>
+                  <textbox id="ifl_isSecure" readonly="true" class="plain"/>
+                </row>
+
+                <row align="center">
+                  <hbox align="center" pack="end">
+                    <label value="&props.expires.label;" control="ifl_expires"/>
+                  </hbox>
+                  <textbox id="ifl_expires" readonly="true" class="plain"/>
+                </row>
+
+              </rows>
+            </grid>
+          </groupbox>
+          <hbox>
+            <button id="removeCookie" disabled="true"
+                          label="&button.removecookie.label;"
+                          accesskey="&button.removecookie.accesskey;"
+                          oncommand="DeleteCookie();"/>
+            <button id="removeAllCookies"
+                          label="&button.removeallcookies.label;"
+                          accesskey="&button.removeallcookies.accesskey;"
+                          oncommand="DeleteAllCookies();"/>
+            <!--  todo: <button id="restoreCookies" class="dialog push" disabled="true" label="&button.restorecookie.label;" oncommand="RestoreCookies();"/> -->
+          </hbox>
+          <separator class="thin"/>
+          <hbox align="start">
+            <checkbox id="checkbox" label="&futureCookies.label;" accesskey="&futureCookies.accesskey;" persist="checked"/>
+          </hbox>
+        </vbox>
+      </vbox>
+
+      <vbox id="servers" flex="1">
+          <description id="permissionsText">&div.bannedservers.label;</description>
+          <separator class="thin"/>
+          <hbox>
+            <textbox id="cookie-site" flex="1" oninput="buttonEnabling(this);"/>
+            <button id="btnBlock" label="&blockSite.label;" disabled="true"
+                    accesskey="&blockSite.accesskey;"
+                    oncommand="setCookiePermissions(nsIPermissionManager.DENY_ACTION);"/>
+            <button id="btnSession" label="&allowSiteSession.label;" disabled="true"
+                    accesskey="&allowSiteSession.accesskey;"
+                    oncommand="setCookiePermissions(nsICookiePermission.ACCESS_SESSION);"/>
+            <button id="btnAllow" label="&allowSite.label;" disabled="true"
+                    accesskey="&allowSite.accesskey;"
+                    oncommand="setCookiePermissions(nsIPermissionManager.ALLOW_ACTION);"/>
+          </hbox>
+          <separator class="thin"/>
+          <tree id="permissionsTree"
+                flex="1"
+                style="height: 10em;"
+                hidecolumnpicker="true"
+                onkeypress="HandlePermissionKeyPress(event)"
+                onselect="PermissionSelected();">
+            <treecols>
+              <treecol id="siteCol"
+                       label="&treehead.sitename.label;"
+                       flex="5"
+                       onclick="PermissionColumnSort('host', true);" persist="width"
+                       sortDirection="ascending"/>
+              <splitter class="tree-splitter"/>
+              <treecol id="siteCol2" label="&treehead.scheme.label;"
+                       flex="5"
+                       onclick="PermissionColumnSort('scheme', true);"
+                       persist="width"/>
+              <splitter class="tree-splitter"/>
+              <treecol id="capabilityCol"
+                       label="&treehead.status.label;"
+                       flex="5"
+                       onclick="PermissionColumnSort('capability', true);"
+                       persist="width"/>
+            </treecols>
+            <treechildren/>
+          </tree>
+          <hbox>
+            <button id="removePermission"
+                    disabled="true"
+                    label="&removepermission.label;"
+                    accesskey="&removepermission.accesskey;"
+                    oncommand="DeletePermission();"/>
+            <button id="removeAllPermissions"
+                    label="&removeallpermissions.label;"
+                    accesskey="&removeallpermissions.accesskey;"
+                    oncommand="DeleteAllPermissions();"/>
+          </hbox>
+      </vbox>
+
+    </tabpanels>
+  </tabbox>
+</dialog>

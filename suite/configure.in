@@ -1,0 +1,30 @@
+dnl -*- Mode: Autoconf; tab-width: 2; indent-tabs-mode: nil; -*-
+dnl vi: set tabstop=2 shiftwidth=2 expandtab:
+dnl This Source Code Form is subject to the terms of the Mozilla Public
+dnl License, v. 2.0. If a copy of the MPL was not distributed with this
+dnl file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+dnl Things we need to carry from confvars.sh
+AC_DEFINE(MOZ_SUITE)
+AC_SUBST(MOZ_SUITE)
+AC_SUBST(MOZ_COMPOSER)
+AC_SUBST(BRASSMONKEY_VERSION)
+AC_DEFINE(MOZ_SEPARATE_MANIFEST_FOR_THEME_OVERRIDES)
+
+dnl =========================================================
+dnl = ChatZilla
+dnl =========================================================
+MOZ_ARG_ENABLE_BOOL(irc,
+[  --enable-irc        Enable building of the ChatZilla extension],
+    MOZ_IRC=1,
+    MOZ_IRC= )
+AC_SUBST(MOZ_IRC)
+
+dnl =========================================================
+dnl = DOM Inspector
+dnl =========================================================
+MOZ_ARG_ENABLE_BOOL(inspector,
+[  --enable-inspector  Enable building of the DOM Inspector extension],
+    MOZ_INSPECTOR=1,
+    MOZ_INSPECTOR= )
+AC_SUBST(MOZ_INSPECTOR)

@@ -1,0 +1,212 @@
+<?xml version="1.0"?>
+
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<!DOCTYPE overlay [
+<!ENTITY % pref-composing_messagesDTD SYSTEM "chrome://messenger/locale/messengercompose/pref-composing_messages.dtd">
+%pref-composing_messagesDTD;
+<!ENTITY % editorOverlayDTD SYSTEM "chrome://editor/locale/editorOverlay.dtd">
+%editorOverlayDTD;
+]>
+
+<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <prefpane id="composing_messages_pane"
+            label="&pref.composing.messages.title;"
+            script="chrome://messenger/content/messengercompose/pref-composing_messages.js"
+            onpaneload="this.PopulateFonts();">
+
+    <preferences id="composing_messages_preferences">
+      <preference id="mail.forward_message_mode"
+                  name="mail.forward_message_mode"
+                  type="int"/>
+      <preference id="mail.reply_quote_inline"
+                  name="mail.reply_quote_inline"
+                  type="bool"/>
+      <preference id="mail.compose.autosave"
+                  name="mail.compose.autosave"
+                  type="bool"
+                  onchange="EnableMailComposeAutosaveInterval(this.value);"/>
+      <preference id="mail.compose.autosaveinterval"
+                  name="mail.compose.autosaveinterval"
+                  type="int"/>
+      <preference id="mail.warn_on_send_accel_key"
+                  name="mail.warn_on_send_accel_key"
+                  type="bool"/>
+      <preference id="mailnews.wraplength"
+                  name="mailnews.wraplength"
+                  type="int"/>
+      <preference id="msgcompose.font_face"
+                  name="msgcompose.font_face"
+                  type="string"/>
+      <preference id="msgcompose.font_size"
+                  name="msgcompose.font_size"
+                  type="string"/>
+      <preference id="msgcompose.text_color"
+                  name="msgcompose.text_color"
+                  type="string"/>
+      <preference id="msgcompose.background_color"
+                  name="msgcompose.background_color"
+                  type="string"/>
+      <preference id="mailnews.reply_header_type"
+                  name="mailnews.reply_header_type"
+                  type="int"/>
+      <preference id="mail.compose.default_to_paragraph"
+                  name="mail.compose.default_to_paragraph"
+                  type="bool"/>
+    </preferences>
+
+    <groupbox>
+      <caption label="&generalComposing.label;"/>
+
+      <radiogroup id="forwardMessageMode"
+                  orient="horizontal"
+                  align="center"
+                  preference="mail.forward_message_mode">
+        <label value="&forwardMsg.label;" control="forwardMessageMode"/>
+        <radio value="2"
+               label="&inline.label;"
+               accesskey="&inline.accesskey;"/>
+        <radio value="0"
+               label="&asAttachment.label;"
+               accesskey="&asAttachment.accesskey;"/>
+      </radiogroup>
+
+      <checkbox id="replyQuoteInline" label="&replyQuoteInline.label;"
+                preference="mail.reply_quote_inline"
+                accesskey="&replyQuoteInline.accesskey;"/>
+
+      <hbox align="center">
+        <checkbox id="autoSave" label="&autoSave.label;"
+                  preference="mail.compose.autosave"
+                  accesskey="&autoSave.accesskey;"
+                  aria-labelledby="autoSave autoSaveInterval autoSaveEnd"/>
+        <textbox id="autoSaveInterval"
+                 type="number"
+                 min="1"
+                 max="99"
+                 size="2"
+                 preference="mail.compose.autosaveinterval"
+                 aria-labelledby="autoSave autoSaveInterval autoSaveEnd"/>
+        <label id="autoSaveEnd" value="&autoSaveEnd.label;"/>
+      </hbox>
+
+      <checkbox id="mailWarnOnSendAccelKey"
+                label="&warnOnSendAccelKey.label;"
+                accesskey="&warnOnSendAccelKey.accesskey;"
+                preference="mail.warn_on_send_accel_key"/>
+
+      <hbox align="center">
+        <label id="wrapOutLabel"
+               value="&wrapOutMsg.label;"
+               accesskey="&wrapOutMsg.accesskey;"
+               control="wrapLength"/>
+        <textbox id="wrapLength"
+                 type="number"
+                 min="0"
+                 max="999"
+                 size="3"
+                 preference="mailnews.wraplength"
+                 aria-labelledby="wrapOutLabel wrapLength wrapOutEnd"/>
+        <label id="wrapOutEnd" value="&char.label;"/>
+      </hbox>
+      <hbox align="center">
+        <label id="selectHeaderType"
+               value="&selectHeaderType.label;"
+               accesskey="&selectHeaderType.accesskey;"
+               control="mailNewsReplyList"/>
+        <menulist id="mailNewsReplyList"
+                  preference="mailnews.reply_header_type">
+          <menupopup>
+            <menuitem value="0"
+                      label="&noReplyOption.label;"/>
+            <menuitem value="1"
+                      label="&authorWroteOption.label;"/>
+            <menuitem value="2"
+                      label="&onDateAuthorWroteOption.label;"/>
+            <menuitem value="3"
+                      label="&authorWroteOnDateOption.label;"/>
+          </menupopup>
+        </menulist>
+      </hbox>
+    </groupbox>
+
+    <!-- Composing Mail -->
+
+    <groupbox align="start">
+      <caption label="&defaultMessagesHeader.label;"/>
+      <grid>
+        <columns>
+          <column/>
+          <column/>
+        </columns>
+
+        <rows>
+          <row align="center">
+            <label value="&font.label;"
+                   accesskey="&font.accesskey;"
+                   control="fontSelect"/>
+            <menulist id="fontSelect" preference="msgcompose.font_face">
+              <menupopup>
+                <menuitem value=""
+                          label="&fontVarWidth.label;"/>
+                <menuitem value="tt"
+                          label="&fontFixedWidth.label;"/>
+                <menuseparator/>
+                <menuitem value="Helvetica, Arial, sans-serif"
+                          label="&fontHelvetica.label;"/>
+                <menuitem value="Times New Roman, Times, serif"
+                          label="&fontTimes.label;"/>
+                <menuitem value="Courier New, Courier, monospace"
+                          label="&fontCourier.label;"/>
+                <menuseparator/>
+              </menupopup>
+            </menulist>
+          </row>
+	  <row align="center">
+            <label value="&size.label;"
+                   accesskey="&size.accesskey;"
+                   control="fontSizeSelect"/>
+            <hbox align="center">
+              <menulist id="fontSizeSelect" preference="msgcompose.font_size">
+                <menupopup>
+                  <menuitem value="x-small" label="&size-tinyCmd.label;"/>
+                  <menuitem value="small" label="&size-smallCmd.label;"/>
+                  <menuitem value="medium" label="&size-mediumCmd.label;"/>
+                  <menuitem value="large" label="&size-largeCmd.label;"/>
+                  <menuitem value="x-large" label="&size-extraLargeCmd.label;"/>
+                  <menuitem value="xx-large" label="&size-hugeCmd.label;"/>
+                </menupopup>
+              </menulist>
+              <label value="&fontColor.label;"
+                     accesskey="&fontColor.accesskey;"
+                     control="msgComposeTextColor"/>
+              <colorpicker id="msgComposeTextColor"
+                           type="button"
+                           preference="msgcompose.text_color"/>
+              <label value="&bgColor.label;"
+                     accesskey="&bgColor.accesskey;"
+                     control="msgComposeBackgroundColor"/>
+              <colorpicker id="msgComposeBackgroundColor"
+                           type="button"
+                           preference="msgcompose.background_color"/>
+            </hbox>
+          </row>
+        </rows>
+      </grid>
+      <separator class="thin"/>
+      <description>&defaultCompose.label;</description>
+      <radiogroup id="defaultCompose"
+                  class="indent"
+                  preference="mail.compose.default_to_paragraph">
+        <radio value="false"
+               label="&defaultBodyText.label;"
+               accesskey="&defaultBodyText.accesskey;"/>
+        <radio value="true"
+               label="&defaultParagraph.label;"
+               accesskey="&defaultParagraph.accesskey;"/>
+      </radiogroup>
+    </groupbox>
+  </prefpane>
+</overlay>

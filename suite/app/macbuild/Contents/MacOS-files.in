@@ -1,0 +1,8 @@
+/*.app/***
+/*.dylib
+/certutil
+/brassmonkey-bin
+/pk12util
+/ssltunnel
+/xpcshell
+/XUL

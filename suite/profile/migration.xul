@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<!DOCTYPE dialog SYSTEM "chrome://communicator/locale/migration/migration.dtd" >
+
+<wizard id="migrationWizard"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        title="&migrationWizard.title;"
+        onload="MigrationWizard.init()"
+        onunload="MigrationWizard.uninit()"
+        style="width: 40em; height: 32em;"
+        branded="true"
+        buttons="accept,cancel"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <script type="application/javascript"
+          src="chrome://communicator/content/migration/migration.js"/>
+
+  <stringbundle id="bundle"
+                src="chrome://communicator/locale/migration/migration.properties"/>
+
+  <wizardpage id="importSource" pageid="importSource" next="selectProfile"
+              label="&importSource.title;"
+              onpageadvanced="return MigrationWizard.onImportSourcePageAdvanced();">
+    <label id="importAll"
+                 control="importSourceGroup">&importAllFrom.label;</label>
+    <label id="importBookmarks" control="importSourceGroup"
+                 hidden="true">&importBookmarksFrom.label;</label>
+
+    <radiogroup id="importSourceGroup" align="start">
+      <radio id="thunderbird" label="&importFromThunderbird.label;"
+             accesskey="&importFromThunderbird.accesskey;"
+             value="thunderbird"/>
+      <!-- fromfile is used for bookmark importing -->
+      <radio id="fromFile" label="&importFromFile.label;" value="fromFile"
+             accesskey="&importFromFile.accesskey;" hidden="true"/>
+      <radio id="nothing" label="&importFromNothing.label;" value="nothing"
+             accesskey="&importFromNothing.accesskey;" hidden="true"/>
+    </radiogroup>
+  </wizardpage>
+
+  <wizardpage id="selectProfile" pageid="selectProfile"
+              label="&selectProfile.title;" next="importItems"
+              onpageshow="return MigrationWizard.onSelectProfilePageShow();"
+              onpageadvanced="return MigrationWizard.onSelectProfilePageAdvanced();">
+    <label control="profiles">&selectProfile.label;</label>
+
+    <radiogroup id="profiles" align="left"/>
+  </wizardpage>
+
+  <wizardpage id="importItems" pageid="importItems" label="&importItems.title;"
+              next="homePageImport"
+              onpageshow="return MigrationWizard.onImportItemsPageShow();"
+              onpageadvanced="return MigrationWizard.onImportItemsPageAdvanced();"
+              oncommand="MigrationWizard.onImportItemCommand();">
+    <label control="dataSources">&importItems.label;</label>
+
+    <vbox id="dataSources" style="overflow-y: auto;"
+          align="left" flex="1" role="group"/>
+  </wizardpage>
+
+  <wizardpage id="homePageImport" pageid="homePageImport"
+              next="migrating"
+              onpageshow="return MigrationWizard.onHomePageMigrationPageShow();"
+              onpageadvanced="return MigrationWizard.onHomePageMigrationPageAdvanced();">
+
+    <label id="homePageImportDesc" control="homePageRadioGroup"/>
+    <radiogroup id="homePageRadioGroup" align="start">
+      <radio id="oldHomePage" hidden="true"/>
+      <radio id="homePageStart" selected="true"/>
+    </radiogroup>
+  </wizardpage>
+
+  <wizardpage id="migrating" pageid="migrating" label="&migrating.title;"
+              next="done" onpageshow="MigrationWizard.onMigratingPageShow();">
+    <label control="migratingItems">&migrating.label;</label>
+
+    <vbox id="migratingItems" style="overflow-y: auto;" align="left" role="group"/>
+
+    <hbox>
+      <progressmeter class="progressmeter-statusbar" id="progressBar"
+                     flex="1" mode="normal" value="0"/>
+    </hbox>
+  </wizardpage>
+
+  <wizardpage id="done" pageid="done" label="&done.title;"
+              onpageshow="MigrationWizard.onDonePageShow();">
+    <label control="doneItems">&done.label;</label>
+
+    <vbox id="doneItems" style="overflow-y: auto;" align="left" role="group"/>
+  </wizardpage>
+</wizard>

@@ -1,0 +1,149 @@
+<?xml version="1.0"?>
+
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<?xml-stylesheet href="chrome://messenger/skin/prefPanels.css" type="text/css"?>
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+
+<!DOCTYPE overlay [
+<!ENTITY % brandDTD SYSTEM "chrome://branding/locale/brand.dtd">
+%brandDTD;
+<!ENTITY % prefMailnewsDTD SYSTEM "chrome://messenger/locale/pref-mailnews.dtd">
+%prefMailnewsDTD;
+]>
+
+<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <prefpane id="mailnews_pane"
+            label="&pref.mailnews.title;"
+            script="chrome://messenger/content/pref-mailnews.js">
+
+    <preferences id="mailnews_preferences">
+      <preference id="mailnews.confirm.moveFoldersToTrash"
+                  name="mailnews.confirm.moveFoldersToTrash" type="bool"/>
+      <preference id="mailnews.remember_selected_message"
+                  name="mailnews.remember_selected_message" type="bool"/>
+      <preference id="mailnews.thread_pane_column_unthreads"
+                  name="mailnews.thread_pane_column_unthreads"
+                  inverted="true" type="bool"/>
+      <preference id="mailnews.start_page.enabled"
+                  onchange="this.parentNode.parentNode.startPageCheck();"
+                  name="mailnews.start_page.enabled" type="bool"/>
+      <preference id="mailnews.start_page.url"
+                  name="mailnews.start_page.url" type="wstring"/>
+      <preference id="mail.biff.on_new_window"
+                  name="mail.biff.on_new_window" inverted="true" type="bool"/>
+      <preference id="network.protocol-handler.external.mailto"
+                  name="network.protocol-handler.external.mailto"
+                  inverted="true" type="bool"/>
+      <preference id="network.protocol-handler.external.news"
+                  name="network.protocol-handler.external.news"
+                  inverted="true" type="bool"/>
+      <preference id="network.protocol-handler.external.snews"
+                  name="network.protocol-handler.external.snews"
+                  inverted="true" type="bool"/>
+      <preference id="network.protocol-handler.external.nntp"
+                  name="network.protocol-handler.external.nntp"
+                  inverted="true" type="bool"/>
+      <preference id="system.windows.lock_ui.defaultMailClient" readonly="true"
+                  name="system.windows.lock_ui.defaultMailClient" type="bool"/>
+      <preference id="system.windows.lock_ui.defaultNewsClient" readonly="true"
+                  name="system.windows.lock_ui.defaultNewsClient" type="bool"/>
+      <preference id="system.windows.lock_ui.defaultFeedClient" readonly="true"
+                  name="system.windows.lock_ui.defaultFeedClient" type="bool"/>
+    </preferences>
+
+    <groupbox>
+      <caption label="&generalSettings.caption;"/>
+
+      <hbox align="center">
+        <checkbox id="mailnewsConfirmMoveFoldersToTrash" label="&confirmMove.label;"
+                  preference="mailnews.confirm.moveFoldersToTrash"
+                  accesskey="&confirmMove.accesskey;"/>
+      </hbox>
+
+      <hbox align="center">
+        <checkbox id="mailRememberLastMsg" label="&rememberLastMsg.label;"
+                  preference="mailnews.remember_selected_message"
+                  accesskey="&rememberLastMsg.accesskey;" />
+      </hbox>
+
+      <hbox align="center">
+        <checkbox id="mailPreserveThreading"
+                  label="&preserveThreading.label;"
+                  accesskey="&preserveThreading.accesskey;"
+                  preference="mailnews.thread_pane_column_unthreads"/>
+      </hbox>
+
+      <hbox align="center">
+        <checkbox id="mailBiffOnNewWindow"
+                  label="&mailBiffOnNewWindow.label;"
+                  accesskey="&mailBiffOnNewWindow.accesskey;"
+                  preference="mail.biff.on_new_window"/>
+      </hbox>
+
+      <vbox id="defaultMailPrefs" hidden="true">
+        <separator class="thin"/>
+
+        <description>&defaultMailSettings.description;</description>
+        <hbox class="indent" align="center">
+          <button id="setDefaultMail"
+                  accesskey="&setDefaultMail.accesskey;"
+                  label="&setDefaultMail.label;"
+                  oncommand="onSetDefault(this, 'MAIL');"
+                  preference="system.windows.lock_ui.defaultMailClient"/>
+          <button id="setDefaultNews"
+                  accesskey="&setDefaultNews.accesskey;"
+                  label="&setDefaultNews.label;"
+                  oncommand="onSetDefault(this, 'NEWS');"
+                  preference="system.windows.lock_ui.defaultNewsClient"/>
+          <button id="setDefaultRss"
+                  accesskey="&setDefaultFeed.accesskey;"
+                  label="&setDefaultFeed.label;"
+                  oncommand="onSetDefault(this, 'RSS');"
+                  preference="system.windows.lock_ui.defaultFeedClient"/>
+        </hbox>
+      </vbox>
+
+      <separator class="thin"/>
+
+      <description>&useInternalSettings.description;</description>
+      <hbox class="indent" align="center">
+        <checkbox id="useInternalMail"
+                  label="&useInternalMail.label;"
+                  accesskey="&useInternalMail.accesskey;"
+                  preference="network.protocol-handler.external.mailto"/>
+        <checkbox id="useInternalNews"
+                  label="&useInternalNews.label;"
+                  accesskey="&useInternalNews.accesskey;"
+                  oncommand="onNewsChange(this.checked);"
+                  preference="network.protocol-handler.external.news"/>
+      </hbox>
+    </groupbox>
+
+    <groupbox>
+      <caption label="&messengerStartPage.caption;"/>
+      <hbox align="center">
+        <checkbox id="mailnewsStartPageEnabled" label="&enableStartPage.label;"
+                  preference="mailnews.start_page.enabled"
+                  accesskey="&enableStartPage.accesskey;"/>
+      </hbox>
+
+      <hbox align="center">
+        <label value="&location.label;" accesskey="&location.accesskey;"
+               control="mailnewsStartPageUrl"/>
+        <textbox id="mailnewsStartPageUrl" flex="1" type="autocomplete"
+                 preference="mailnews.start_page.url" timeout="50"
+                 autocompletesearch="history" maxrows="6" class="uri-element"/>
+      </hbox>
+      <hbox pack="end">
+        <button label="&useDefault.label;" accesskey="&useDefault.accesskey;"
+                oncommand="setHomePageToDefaultPage();">
+          <observes element="mailnewsStartPageUrl" attribute="disabled"/>
+        </button>
+      </hbox>
+
+    </groupbox>
+  </prefpane>
+</overlay>

@@ -1,0 +1,29 @@
+# .gitignore - List of filenames git should ignore
+
+# Filenames that should be ignored wherever they appear
+*~
+*.rej
+*.orig
+*.pyc
+*.pyo
+TAGS
+tags
+ID
+.DS_Store*
+
+# Vim swap files.
+.*.sw[a-z]
+
+# User files that may appear at the root
+/.mozconfig*
+/mozconfig
+/configure
+/config.cache
+/config.log
+/.clang_complete
+/mach.ini
+
+# Ignore the files and directory that Eclipse IDE creates
+.project
+.cproject
+.settings/

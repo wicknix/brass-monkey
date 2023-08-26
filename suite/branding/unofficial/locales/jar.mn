@@ -1,0 +1,12 @@
+#filter substitution
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+
+@AB_CD@.jar:
+% locale branding @AB_CD@ %locale/@AB_CD@/branding/
+  locale/@AB_CD@/branding/brand.dtd                                         (en-US/brand.dtd)
+  locale/@AB_CD@/branding/brand.properties                                  (en-US/brand.properties)
+  locale/@AB_CD@/branding/aboutRights.dtd                                   (en-US/aboutRights.dtd)
+  locale/@AB_CD@/branding/aboutRights.properties                            (en-US/aboutRights.properties)

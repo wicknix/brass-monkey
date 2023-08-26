@@ -1,0 +1,248 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+include $(topsrcdir)/config/config.mk
+
+_ABS_SRCDIR := $(abspath $(topsrcdir))
+
+vpath %.xml @srcdir@/en-US/searchplugins
+vpath %.xml $(LOCALE_SRCDIR)/searchplugins
+
+SUBMAKEFILES += \
+	$(DEPTH)/$(MOZ_BRANDING_DIRECTORY)/Makefile \
+	$(NULL)
+
+# This makefile uses variable overrides from the libs-% target to
+# build non-default locales to non-default dist/ locations. Be aware!
+
+PWD := $(CURDIR)
+
+# These are defaulted to be compatible with the files the wget-en-US target
+# pulls. You may override them if you provide your own files. You _must_
+# override them when MOZ_PKG_PRETTYNAMES is defined - the defaults will not
+# work in that case.
+ZIP_IN ?= $(ABS_DIST)/$(PACKAGE)
+WIN32_INSTALLER_IN ?= $(ABS_DIST)/$(PKG_INST_PATH)$(PKG_INST_BASENAME).exe
+RETRIEVE_WINDOWS_INSTALLER = 1
+
+MOZ_LANGPACK_EID=langpack-$(AB_CD)@brassmonkey
+
+L10N_PREF_JS_EXPORTS = $(call MERGE_FILE,suite-l10n.js)
+L10N_PREF_JS_EXPORTS_PATH = $(FINAL_TARGET)/$(PREF_DIR)
+L10N_PREF_JS_EXPORTS_FLAGS = $(PREF_PPFLAGS) --silence-missing-directive-warnings
+PP_TARGETS += L10N_PREF_JS_EXPORTS
+
+ifeq ($(MOZ_WIDGET_TOOLKIT),cocoa)
+MOZ_PKG_MAC_DSSTORE=$(ABS_DIST)/branding/dsstore
+MOZ_PKG_MAC_BACKGROUND=$(ABS_DIST)/branding/background.png
+MOZ_PKG_MAC_ICON=$(ABS_DIST)/branding/disk.icns
+MOZ_PKG_MAC_EXTRA=--symlink '/Applications:/ '
+endif
+
+ifeq (WINNT,$(OS_ARCH))
+UNINSTALLER_PACKAGE_HOOK = $(RM) -r $(STAGEDIST)/uninstall; \
+	$(NSINSTALL) -D $(STAGEDIST)/uninstall; \
+	cp ../installer/windows/l10ngen/helper.exe $(STAGEDIST)/uninstall; \
+	$(RM) $(ABS_DIST)/l10n-stage/setup.exe; \
+	cp ../installer/windows/l10ngen/setup.exe $(ABS_DIST)/l10n-stage; \
+	$(NULL)
+endif
+
+NON_OMNIJAR_FILES = \
+	defaults/messenger/mailViews.dat \
+	defaults/profile/panels.rdf \
+	defaults/profile/mimeTypes.rdf \
+	defaults/profile/chrome/userChrome-example.css \
+	defaults/profile/chrome/userContent-example.css \
+	$(NULL)
+
+SEARCH_PLUGINS_NAMES = $(shell cat $(call MERGE_FILE,/searchplugins/list.txt))
+SEARCH_PLUGINS_PATH := $(FINAL_TARGET)/searchplugins
+.PHONY: searchplugins
+SEARCH_PLUGINS_TARGET := libs searchplugins
+SEARCH_PLUGINS := $(foreach plugin,$(addsuffix .xml,$(SEARCH_PLUGINS_NAMES)),$(or $(wildcard $(call MERGE_FILE,searchplugins/$(plugin))),$(info Missing searchplugin: $(plugin))))
+# Some locale-specific search plugins may have preprocessor directives, but the
+# default en-US ones do not.
+SEARCH_PLUGINS_FLAGS := --silence-missing-directive-warnings 
+PP_TARGETS += SEARCH_PLUGINS
+
+include $(topsrcdir)/config/rules.mk
+
+include $(topsrcdir)/platform/toolkit/locales/l10n.mk
+
+$(STAGEDIST): $(DIST)/branding
+
+$(DIST)/branding:
+	$(NSINSTALL) -D $@
+
+PROFILE_CHROME = userChrome-example.css userContent-example.css
+
+NO_JA_JP_MAC_AB_CD := $(if $(filter ja-JP-mac, $(AB_CD)),ja,$(AB_CD))
+
+BOOKMARKS_INC_FILE = $(call MERGE_FILE,profile/bookmarks.inc)
+BOOKMARKS_XTRA_FILE = $(call MERGE_FILE,profile/bookmarks.extra)
+
+# the #include in the .in file requires all to be in the same dir, sadly.
+%/defaults/profile/bookmarks.html: $(BOOKMARKS_INC_FILE) $(BOOKMARKS_XTRA_FILE) generic/profile/bookmarks.html.in 
+	$(SYSINSTALL) -D $(dir $@)
+	$(RM) -rf profile/*bookmarks*
+	$(NSINSTALL) -D profile
+	cp $^ profile/
+	$(call py_action,preprocessor, \
+	  -DAB_CD=$(NO_JA_JP_MAC_AB_CD) \
+	  profile/bookmarks.html.in \
+	  -o $@)
+
+PANELS_XTRA_FILE = $(call MERGE_FILE,profile/panels.extra)
+
+# the #include in the .in file requires all to be in the same dir, sadly.
+%/defaults/profile/panels.rdf: $(PANELS_XTRA_FILE) generic/profile/panels.rdf.in
+	$(SYSINSTALL) -D $(dir $@)
+	$(RM) -rf profile/panels*
+	$(NSINSTALL) -D profile
+	cp $^ profile/
+	sed \
+	  -n 's/.*<RDF:Description about="\(.*\)">.*/        <RDF:li resource="\1"\/>/p' \
+	  profile/panels.extra > profile/panels-urn.inc
+	$(call py_action,preprocessor, \
+	  profile/panels.rdf.in -o $@)
+
+libs:: $(FINAL_TARGET)/defaults/profile/bookmarks.html ;
+libs:: $(FINAL_TARGET)/defaults/profile/panels.rdf ;
+
+libs:: $(call MERGE_FILES,$(addprefix profile/chrome/,$(PROFILE_CHROME)))
+	$(SYSINSTALL) $(IFLAGS1) $^ $(FINAL_TARGET)/defaults/profile/chrome
+
+# Extend l10n.mk clobber-% target for our localised extensions
+clobber-%:
+	$(RM) -rf $(DIST)/xpi-stage/chatzilla-$* $(DIST)/xpi-stage/chatzilla-*.$*.xpi
+
+libs-%:
+	$(NSINSTALL) -D $(DIST)/install
+	@$(MAKE) -C $(DEPTH)/toolkit/locales libs-$*
+	@$(MAKE) -C ../../suite/editor/ui/locales AB_CD=$* XPI_NAME=locale-$*
+ifdef MOZ_IRC
+	@$(MAKE) -C $(DEPTH)/extensions/irc/locales libs-$*
+endif
+	@$(MAKE) -C $(DEPTH)/extensions/spellcheck/locales AB_CD=$* XPI_NAME=locale-$*
+	@$(MAKE) -C $(DEPTH)/intl/locales AB_CD=$* XPI_NAME=locale-$*
+	@$(MAKE) libs AB_CD=$* XPI_NAME=locale-$* PREF_DIR=defaults/pref
+
+repackage-win32-installer: WIN32_INSTALLER_OUT=$(ABS_DIST)/$(PKG_INST_PATH)$(PKG_INST_BASENAME).exe
+repackage-win32-installer: $(call ESCAPE_WILDCARD,$(WIN32_INSTALLER_IN)) $(SUBMAKEFILES)
+	@echo 'Repackaging $(WIN32_INSTALLER_IN) into $(WIN32_INSTALLER_OUT).'
+	$(MAKE) -C $(DEPTH)/$(MOZ_BRANDING_DIRECTORY) export
+	$(MAKE) -C ../installer/windows CONFIG_DIR=l10ngen l10ngen/setup.exe l10ngen/7zSD.sfx
+	$(MAKE) repackage-zip \
+	  AB_CD=$(AB_CD) \
+	  MOZ_PKG_FORMAT=SFX7Z \
+	  ZIP_IN='$(WIN32_INSTALLER_IN)' \
+	  ZIP_OUT='$(WIN32_INSTALLER_OUT)' \
+	  SFX_HEADER='$(PWD)/../installer/windows/l10ngen/7zSD.sfx \
+	              $(_ABS_SRCDIR)/suite/installer/windows/app.tag'
+
+ifeq (WINNT,$(OS_ARCH))
+repackage-win32-installer-%: libs-% $(STAGEDIST)
+	@$(MAKE) repackage-win32-installer AB_CD=$* WIN32_INSTALLER_IN='$(WIN32_INSTALLER_IN)'
+else
+repackage-win32-installer-%: ;
+endif
+
+clobber-zip:
+	$(RM) $(STAGEDIST)/chrome/$(AB_CD).jar \
+	  $(STAGEDIST)/chrome/$(AB_CD).manifest \
+	  $(STAGEDIST)/defaults/pref/suite-l10n.js
+	$(RM) -rf $(STAGEDIST)/searchplugins \
+	  $(STAGEDIST)/dictionaries \
+	  $(STAGEDIST)/hyphenation \
+	  $(STAGEDIST)/defaults/profile \
+	  $(STAGEDIST)/chrome/$(AB_CD) \
+	  $(STAGEDIST)/extensions/langpack-$(AB_CD)@* \
+	  $(STAGEDIST)/distribution/extensions/langpack-$(AB_CD)@* \
+
+repackage-zip: repackage-extensions
+
+repackage-extensions: $(STAGEDIST)
+ifdef MOZ_IRC
+	$(MAKE) -C $(DEPTH)/extensions/irc/locales repackage-zip-$(AB_CD) STAGEDIST=$(STAGEDIST)
+endif
+ifeq ($(MOZ_PACKAGER_FORMAT),omni)
+	$(MAKE) -C ../app pack-ext AB_CD=$(AB_CD) STAGEDIST=$(STAGEDIST)/extensions;
+	$(MAKE) -C ../app pack-ext AB_CD=$(AB_CD) STAGEDIST=$(STAGEDIST)/distribution/extensions;
+endif
+
+repackage-zip-%: $(call ESCAPE_WILDCARD,$(ZIP_IN)) $(STAGEDIST) libs-%
+	@$(MAKE) repackage-zip AB_CD=$* ZIP_IN=$(ZIP_IN)
+
+langpack: langpack-$(AB_CD)
+
+ifdef MOZ_UPDATER
+libs:: $(addprefix $(LOCALE_SRCDIR)/,updater/updater.ini)
+ifeq ($(OS_ARCH),WINNT)
+	cat $< $(srcdir)/../installer/windows/nsis/updater_append.ini | \
+	  sed -e 's/^InfoText=/Info=/' -e 's/^TitleText=/Title=/' | \
+	  sed -e 's/%MOZ_APP_DISPLAYNAME%/$(MOZ_APP_DISPLAYNAME)/' > \
+	  $(FINAL_TARGET)/updater.ini
+else
+	cat $< | \
+	  sed -e 's/^InfoText=/Info=/' -e 's/^TitleText=/Title=/' | \
+	  sed -e 's/%MOZ_APP_DISPLAYNAME%/$(MOZ_APP_DISPLAYNAME)/' > \
+	  $(FINAL_TARGET)/updater.ini
+endif
+endif
+
+ifdef MOZ_CRASHREPORTER
+libs:: $(call MERGE_FILE,crashreporter/crashreporter-override.ini)
+	$(SYSINSTALL) $(IFLAGS1) $^ $(FINAL_TARGET)
+endif
+
+ident:
+	@printf 'comm_revision '
+	@$(PYTHON) $(MOZILLA_SRCDIR)/config/printconfigsetting.py \
+	    $(STAGEDIST)/application.ini App SourceStamp
+	@printf 'moz_revision '
+	@$(PYTHON) $(MOZILLA_SRCDIR)/config/printconfigsetting.py \
+	    $(STAGEDIST)/platform.ini Build SourceStamp
+	@printf 'buildid '
+	@$(PYTHON) $(MOZILLA_SRCDIR)/config/printconfigsetting.py \
+	    $(STAGEDIST)/application.ini App BuildID
+
+merge-%:
+ifdef LOCALE_MERGEDIR
+	$(RM) -rf $(LOCALE_MERGEDIR)
+	$(MKDIR) -p $(LOCALE_MERGEDIR)
+	$(topsrcdir)/platform/mach compare-locales --merge-dir $(LOCALE_MERGEDIR) --l10n-ini $(srcdir)/l10n.ini $*
+endif
+	@echo
+
+.PHONY: repackage-extensions
+
+MOZ_PKG_EXTRAL10N += extensions/langpack-$(AB_CD)@chatzilla.mozilla.org=$(DIST)/xpi-stage/chatzilla-$(AB_CD)
+
+# This is a generic target that will make a langpack, repack ZIP (+tarball)
+# builds, and repack and installer if applicable. It is called from the
+# tinderbox scripts. Alter it with caution.
+INSTALLERS_TARGETS = clobber-% langpack-% repackage-win32-installer-% repackage-zip-%
+installers-%: $(INSTALLERS_TARGETS)
+	@echo 'repackaging done'
+
+repack-%: AB_CD=$*
+repack-%:
+	$(MAKE) clobber-zip AB_CD=$(AB_CD)
+	$(MAKE) merge-$(AB_CD)
+	$(MAKE) installers-$(AB_CD) MOZ_MAKE_COMPLETE_MAR=1
+
+distribution:
+	$(MAKE) -C $(DEPTH)/tools/update-packaging complete-patch PKG_INST_PATH=
+	$(foreach locale,$(SHIPPED_LOCALES),$(MAKE) -C $(DEPTH)/suite/locales/ repack-$(locale) LOCALE_MERGEDIR=$(LOCALE_MERGEDIR) MOZ_MAKE_COMPLETE_MAR=1 ;)
+
+SHIPPED_LOCALES_FILE = $(topsrcdir)/suite/locales/shipped-locales
+ifeq ($(OS_ARCH), WINNT)
+SHIPPED_FILTER = -e linux -e osx
+else ifeq ($(OS_ARCH), Darwin)
+SHIPPED_FILTER = -e linux -e win32
+else
+SHIPPED_FILTER = -e osx -e win32
+endif
+SHIPPED_LOCALES := $(shell if test -f $(SHIPPED_LOCALES_FILE); then cat $(SHIPPED_LOCALES_FILE) |grep -v -e en-US $(SHIPPED_FILTER) | cut -d " " -f1; fi)

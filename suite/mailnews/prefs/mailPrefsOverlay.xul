@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+
+<!DOCTYPE overlay [
+<!ENTITY % mailPrefsOverlayDTD SYSTEM "chrome://messenger/locale/mailPrefsOverlay.dtd">
+%mailPrefsOverlayDTD;
+]>
+
+<overlay id="mailPrefsOverlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <preferences id="appearance_preferences">
+    <preference id="general.startup.mail"
+                name="general.startup.mail"
+                type="bool"/>
+    <preference id="general.startup.addressbook"
+                name="general.startup.addressbook"
+                type="bool"/>
+  </preferences>
+  <preferences id="scripts_preferences">
+    <preference id="plugin.disable"
+                onchange="setDisableState('pluginAllowMailNews', !this.value);"/>
+    <preference id="mailnews.message_display.allow.plugins"
+                name="mailnews.message_display.allow.plugins"
+                type="bool"/>
+  </preferences>
+  <!-- plugin toggle for mail/news -->
+  <groupbox id="pluginPreferences"
+            orient="horizontal">
+    <checkbox id="pluginAllowMailNews"
+              onsyncfrompreference="document.getElementById('scripts_pane').setDisableState(this.id, !document.getElementById('plugin.disable').value);"
+              label="&enbPluginCheckMailNews.label;"
+              accesskey="&enbPluginCheckMailNews.accesskey;"
+              preference="mailnews.message_display.allow.plugins"/>
+  </groupbox>
+
+  <!-- mail startup toggle -->
+  <groupbox id="generalStartupPreferences">
+    <checkbox id="generalStartupMail"
+              insertafter="generalStartupBrowser"
+              label="&mail.label;"
+              accesskey="&mail.accesskey;"
+              preference="general.startup.mail"/>
+    <checkbox id="generalStartupAddressBook"
+              insertafter="generalStartupEditor,generalStartupMail"
+              label="&addressbook.label;"
+              accesskey="&addressbook.accesskey;"
+              preference="general.startup.addressbook"/>
+  </groupbox>
+
+  <!-- category tree entries for mail/news -->
+  <treechildren id="prefsPanelChildren">
+    <treeitem container="true"
+              id="mailnewsItem"
+              insertafter="navigatorItem"
+              label="&mail.label;"
+              prefpane="mailnews_pane"
+              url="chrome://messenger/content/pref-mailnews.xul"
+              helpTopic="mail_prefs_general">
+      <treechildren id="messengerChildren">
+        <treeitem id="viewingMessagesItem"
+                  label="&viewingMessages.label;"
+                  prefpane="viewing_messages_pane"
+                  url="chrome://messenger/content/pref-viewing_messages.xul"
+                  helpTopic="mail_prefs_display"/>
+        <treeitem id="notificationsItem"
+                  label="&notifications.label;"
+                  prefpane="notifications_pane"
+                  url="chrome://messenger/content/pref-notifications.xul"
+                  helpTopic="mail_prefs_notifications"/>
+        <treeitem id="composingItem"
+                  label="&composingMessages.label;"
+                  prefpane="composing_messages_pane"
+                  url="chrome://messenger/content/messengercompose/pref-composing_messages.xul"
+                  helpTopic="mail_prefs_messages"/>
+        <treeitem id="formattingItem"
+                  label="&format.label;"
+                  prefpane="formatting_pane"
+                  url="chrome://messenger/content/messengercompose/pref-formatting.xul"
+                  helpTopic="mail_prefs_formatting"/>
+        <treeitem id="addressItem"
+                  label="&address.label;"
+                  prefpane="addressing_pane"
+                  url="chrome://messenger/content/addressbook/pref-addressing.xul"
+                  helpTopic="mail_prefs_addressing"/>
+        <treeitem id="junkItem"
+                  label="&junk.label;"
+                  prefpane="junk_pane"
+                  url="chrome://messenger/content/pref-junk.xul"
+                  helpTopic="mail-prefs-junk"/>
+        <treeitem id="tagsItem"
+                  label="&tags.label;"
+                  prefpane="tags_pane"
+                  url="chrome://messenger/content/pref-tags.xul"
+                  helpTopic="mail-prefs-tags"/>
+        <treeitem id="receiptsItem"
+                  label="&return.label;"
+                  prefpane="receipts_pane"
+                  url="chrome://messenger/content/pref-receipts.xul"
+                  helpTopic="mail-prefs-receipts"/>
+        <treeitem id="characterEncodingItem"
+                  label="&characterEncoding2.label;"
+                  prefpane="character_encoding_pane"
+                  url="chrome://messenger/content/pref-character_encoding.xul"
+                  helpTopic="mail_prefs_text_encoding"/>
+        <treeitem id="offlineItem"
+                  label="&networkStorage.label;"
+                  prefpane="offline_pane"
+                  url="chrome://messenger/content/pref-offline.xul"
+                  helpTopic="mail_prefs_offline"/>
+      </treechildren>
+    </treeitem>
+  </treechildren>
+
+</overlay>

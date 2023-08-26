@@ -1,0 +1,187 @@
+<?xml version="1.0"?>
+
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+<?xml-stylesheet href="chrome://messenger/skin/searchDialog.css" type="text/css"?>
+
+<?xul-overlay href="chrome://messenger/content/threadPane.xul"?>
+<?xul-overlay href="chrome://messenger/content/searchTermOverlay.xul"?>
+<?xul-overlay href="chrome://messenger/content/msgFolderPickerOverlay.xul"?>
+<?xul-overlay href="chrome://communicator/content/utilityOverlay.xul"?>
+<?xul-overlay href="chrome://messenger/content/mailKeysOverlay.xul"?>
+
+<!DOCTYPE dialog SYSTEM "chrome://messenger/locale/SearchDialog.dtd">
+
+<dialog id="searchMailWindow"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        windowtype="mailnews:search"
+        title="&searchDialogTitle.label;"
+        style="width: 52em; height: 34em;"
+        persist="screenX screenY width height sizemode"
+        buttons="help"
+        ondialoghelp="return openHelp('search_messages');"
+        ondialogaccept="return false; /* allow Search on Enter */"
+        onload="searchOnLoad();"
+        onunload="onSearchStop(); searchOnUnload();">
+
+  <stringbundle id="bundle_search" src="chrome://messenger/locale/search.properties"/>
+  <stringbundle id="bundle_messenger" src="chrome://messenger/locale/messenger.properties"/>
+  <stringbundle id="bundle_brand" src="chrome://branding/locale/brand.properties"/>
+
+  <script type="application/javascript"
+          src="chrome://messenger/content/mailWindow.js"/>
+  <script type="application/javascript"
+          src="chrome://messenger/content/msgMail3PaneWindow.js"/>
+  <script type="application/javascript"
+          src="chrome://global/content/globalOverlay.js"/>
+  <script type="application/javascript"
+          src="chrome://messenger/content/mailCommands.js"/>
+  <script type="application/javascript"
+          src="chrome://messenger/content/mailWindowOverlay.js"/>
+  <script type="application/javascript"
+          src="chrome://messenger/content/commandglue.js"/>
+  <script type="application/javascript"
+          src="chrome://messenger/content/SearchDialog.js"/>
+  <script type="application/javascript"
+          src="chrome://messenger/content/messengerdnd.js"/>
+  <script type="application/javascript"
+          src="chrome://messenger/content/tabmail.js"/>
+  <script type="application/javascript"
+          src="chrome://messenger/content/folderDisplay.js"/>
+  <script type="application/javascript"
+          src="chrome://global/content/contentAreaUtils.js"/>
+
+  <commands id="commands">
+    <commandset id="mailSearchItems"
+                commandupdater="true"
+                events="mail-search"
+                oncommandupdate="goUpdateSearchItems(this)">
+      <command id="cmd_openMessage" oncommand="goDoCommand('cmd_openMessage');" disabled="true"/>
+      <command id="button_delete" oncommand="goDoCommand('button_delete')" disabled="true"/>
+      <command id="goto_folder_button" oncommand="goDoCommand('goto_folder_button')" disabled="true"/>
+      <command id="saveas_vf_button" oncommand="goDoCommand('saveas_vf_button')" disabled="false"/>
+      <command id="file_message_button"/>
+      <command id="cmd_delete"/>
+      <command id="cmd_shiftDelete" oncommand="goDoCommand('cmd_shiftDelete');"/>
+    </commandset>
+  </commands>
+
+  <keyset id="mailKeys"/>
+
+  <broadcasterset id="mailBroadcasters">
+    <broadcaster id="Communicator:WorkMode"/>
+  </broadcasterset>
+
+  <dummy class="usesMailWidgets"/>
+
+    <vbox id="searchTerms" flex="3" persist="height">
+      <vbox>
+         <hbox align="center">
+         <label value="&searchHeading.label;" accesskey="&searchHeading.accesskey;"
+                control="searchableFolders"/>
+         <menulist id="searchableFolders" flex="2"
+                   class="folderMenuItem"
+                   displayformat="verbose">
+           <menupopup class="searchPopup menulist-menupopup"
+                      type="folder"
+                      mode="search"
+                      showAccountsFileHere="true"
+                      showFileHereLabel="true"
+                      oncommand="updateSearchFolderPicker(event.target.id);"/>
+         </menulist>
+         <checkbox id="checkSearchSubFolders"
+                   label="&searchSubfolders.label;"
+                   checked="true"
+                   accesskey="&searchSubfolders.accesskey;"/>
+         <spacer flex="3"/>
+         <button id="search-button" oncommand="onSearchButton(event);" default="true"/>
+        </hbox>
+        <hbox align="center">
+           <label id="searchOnHeading"
+                  value="&searchOnHeading.label;"
+                  accesskey="&searchOnHeading.accesskey;"
+                  control="menuSearchLocalSystem">
+             <observes element="menuSearchLocalSystem"
+                       attribute="disabled"/>
+           </label>
+           <menulist id="menuSearchLocalSystem"
+                     persist="value"
+                     oncommand="updateSearchLocalSystem();">
+             <menupopup>
+               <menuitem id="menuOnRemote"
+                         value="remote"
+                         label="&searchOnRemote.label;"/>
+               <menuitem id="menuOnLocal"
+                         value="local"
+                         label="&searchOnLocal.label;"/>
+             </menupopup>
+           </menulist>
+           <spacer flex="1"/>
+           <button label="&resetButton.label;" oncommand="onResetSearch(event);" accesskey="&resetButton.accesskey;"/>
+         </hbox>
+      </vbox>
+
+      <hbox flex="1">
+        <vbox id="searchTermListBox" flex="1"/>
+      </hbox>
+    </vbox>
+
+    <splitter id="gray_horizontal_splitter" persist="state">
+      <grippy/>
+    </splitter>
+
+  <vbox id="searchResults" flex="4" persist="height">
+    <vbox id="searchResultListBox" flex="1">
+      <tree id="threadTree"/>
+    </vbox>
+    <hbox align="center">
+
+      <button id="openButton"
+              label="&openButton.label;"
+              command="cmd_openMessage"
+              accesskey="&openButton.accesskey;"/>
+      <button id="fileMessageButton"
+              type="menu"
+              label="&moveButton.label;"
+              accesskey="&moveButton.accesskey;"
+              observes="file_message_button"
+              oncommand="MoveMessageInSearch(event.target);">
+        <menupopup type="folder"
+                   showFileHereLabel="true"
+                   mode="filing"
+                   fileHereLabel="&moveHereMenu.label;"
+                   fileHereAccessKey="&moveHereMenu.accesskey;"/>
+      </button>
+
+      <button id="deleteButton"
+              label="&deleteButton.label;"
+              accesskey="&deleteButton.accesskey;"
+              command="button_delete"/>
+      <button id="goToFolderButton"
+              label="&goToFolderButton.label;"
+              accesskey="&goToFolderButton.accesskey;"
+              command="goto_folder_button"/>
+      <button id="saveAsVFButton"
+              label="&saveAsVFButton.label;"
+              accesskey="&saveAsVFButton.accesskey;"
+              command="saveas_vf_button"/>
+      <spacer flex="1"/>
+      <button dlgtype="help" class="dialog-button"/>
+    </hbox>
+  </vbox>
+
+  <statusbar id="status-bar" class="chromeclass-status">
+    <statusbarpanel id="statusbar-progresspanel"
+                    class="statusbarpanel-progress"
+                    collapsed="true">
+      <progressmeter id="statusbar-icon"
+                     class="progressmeter-statusbar"
+                     mode="normal"
+                     value="0"/>
+    </statusbarpanel>
+    <statusbarpanel id="statusText" crop="right" flex="1"/>
+    <statusbarpanel id="offline-status" class="statusbarpanel-iconic"/>
+  </statusbar>
+
+</dialog>

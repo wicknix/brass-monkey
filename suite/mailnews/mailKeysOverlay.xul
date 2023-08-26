@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<?xul-overlay href="chrome://messenger/content/platformMailnewsOverlay.xul"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://messenger/locale/mailKeysOverlay.dtd">
+
+<overlay id="mailKeysOverlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <keyset id="mailKeys">
+    <key id="key_delete"/>
+    <key id="key_shiftDelete"/>
+    <key id="key_delete2"/> <!-- secondary delete key -->
+    <key id="key_shiftDelete2"/>
+    <key id="key_selectAll"/>
+
+    <key id="key_toggleRead" key="&markAsReadCmd.key;"
+         oncommand="goDoCommand('cmd_markAsRead');"/>
+    <key id="key_toggleFlagged" key="&markFlaggedCmd.key;"
+         oncommand="goDoCommand('cmd_markAsFlagged');"/>
+    <key id="key_openMessage" key="&openMessageWindowCmd.key;"
+         modifiers="accel" oncommand="goDoCommand('cmd_openMessage');"/>
+
+    <!-- Tag Keys -->
+    <!-- Includes both shifted and not, for Azerty and other layouts where the
+         numeric keys are shifted. -->
+    <key id="key_tag0" key="&tagCmd0.key;" modifiers="shift any"
+         oncommand="RemoveAllMessageTags();"/>
+    <key id="key_tag1" key="&tagCmd1.key;" modifiers="shift any"
+         oncommand="ToggleMessageTagKey(1);"/>
+    <key id="key_tag2" key="&tagCmd2.key;" modifiers="shift any"
+         oncommand="ToggleMessageTagKey(2);"/>
+    <key id="key_tag3" key="&tagCmd3.key;" modifiers="shift any"
+         oncommand="ToggleMessageTagKey(3);"/>
+    <key id="key_tag4" key="&tagCmd4.key;" modifiers="shift any"
+         oncommand="ToggleMessageTagKey(4);"/>
+    <key id="key_tag5" key="&tagCmd5.key;" modifiers="shift any"
+         oncommand="ToggleMessageTagKey(5);"/>
+    <key id="key_tag6" key="&tagCmd6.key;" modifiers="shift any"
+         oncommand="ToggleMessageTagKey(6);"/>
+    <key id="key_tag7" key="&tagCmd7.key;" modifiers="shift any"
+         oncommand="ToggleMessageTagKey(7);"/>
+    <key id="key_tag8" key="&tagCmd8.key;" modifiers="shift any"
+         oncommand="ToggleMessageTagKey(8);"/>
+    <key id="key_tag9" key="&tagCmd9.key;" modifiers="shift any"
+         oncommand="ToggleMessageTagKey(9);"/>
+  </keyset>
+
+</overlay>
+

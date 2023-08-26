@@ -1,0 +1,1 @@
+--hg-options='--time' --hgtool=../tools/buildfarm/utils/hgtool.py --hgtool1=../scripts/buildfarm/utils/hgtool.py --skip-chatzilla --skip-comm --skip-inspector --tinderbox-print --mozilla-repo=https://hg.mozilla.org/releases/mozilla-esr52 --mozilla-rev=THUNDERBIRD_52_VERBRANCH

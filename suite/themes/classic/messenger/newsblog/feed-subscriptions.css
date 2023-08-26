@@ -1,0 +1,30 @@
+/* -*- Mode: Java; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*-
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* ::::: Feed Subscription styling :::::: */
+
+#subscriptionsDialog {
+  width: 40em;
+  height: 30em;
+}
+
+#contentPane {
+  padding: 14px;
+}
+
+#rssFeedInfoBox {
+  border: 1px solid ThreeDShadow;
+  margin: 4px;
+  padding-top: 4px;
+  background-color: ThreeDLightShadow;
+}
+
+#statusContainerBox {
+  height: 24px;
+}
+
+#autotagPrefix {
+  width: 35ch;
+}

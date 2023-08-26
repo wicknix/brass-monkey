@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<?xml-stylesheet href="chrome://messenger/skin/start.css" type="text/css"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" [
+<!ENTITY % brandDTD SYSTEM "chrome://branding/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % startDTD SYSTEM "chrome://messenger/locale/start.dtd" >
+%startDTD;
+]>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>&startpage.title;</title>
+</head>
+
+<body>
+<h1>&headline.label;</h1>
+
+<div id="main">
+<p>&description.label;</p>
+<h2>&features.title;</h2>
+<ul>
+  <li>&feat_multiacc.label;</li>
+  <li>&feat_junk.label;</li>
+  <li>&feat_feeds.label;</li>
+  <li>&feat_filters.label;</li>
+  <li>&feat_htmlmsg.label;</li>
+  <li>&feat_abook.label;</li>
+  <li>&feat_tags.label;</li>
+  <li>&feat_integration.label;</li>
+</ul>
+<h2>&dict.title;</h2>
+<p>&dict_intro.label;</p>
+<p>&dict_info.label2;</p>
+<h2>&info.title;</h2>
+<p>&info_bugs.label;</p>
+</div>
+
+<script type="application/javascript">
+  // get vendor, dictionaries and release notes URLs from prefs
+  var formatter = Components.classes["@mozilla.org/toolkit/URLFormatterService;1"]
+                            .getService(Components.interfaces.nsIURLFormatter);
+  var vendorURL = formatter.formatURLPref("app.vendorURL");
+
+  if (vendorURL != "about:blank") {
+    var vendor = document.getElementById("vendorURL");
+    if (vendor)
+      vendor.setAttribute("href", vendorURL);
+  }
+
+  var dictURL = formatter.formatURLPref("spellchecker.dictionaries.download.url");
+  var dictionaries = document.getElementById("dictURL");
+  if (dictionaries)
+    dictionaries.setAttribute("href", dictURL);
+
+  var releaseNotesURL = formatter.formatURLPref("app.releaseNotesURL");
+  var relnotes = document.getElementById("releaseNotesURL");
+  if (relnotes)
+    relnotes.setAttribute("href", releaseNotesURL);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+
+<?xul-overlay href="chrome://navigator/content/platformMailOverlay.xul"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://navigator/locale/mailNavigatorOverlay.dtd" >
+
+<overlay id="mailNavigatorOverlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <script type="application/javascript"
+          src="chrome://navigator/content/mailNavigatorOverlay.js"/>
+
+  <!-- navigator specific commands -->
+  <commandset id="tasksCommands">
+    <command id="cmd_newMessage" oncommand="goOpenNewMessage();"/>
+    <command id="cmd_newCard" oncommand="openNewCardDialog()"/>
+    <command id="cmd_sendPage" oncommand="sendPage();"/>
+    <command id="Browser:SendLink" oncommand="sendLink();"/>
+  </commandset>
+  <keyset id="tasksKeys">
+    <key id="key_newMessage" key="&newMessageCmd.key;" command="cmd_newMessage" modifiers="accel"/>
+  </keyset>
+
+  <!-- navigator specific UI items -->
+  <menupopup id="menu_NewPopup">
+    <menuitem id="menu_newCard"
+              label="&newContactCmd.label;"
+              accesskey="&newContactCmd.accesskey;"
+              command="cmd_newCard"
+              insertafter="navBeginGlobalNewItems"/>
+    <menuitem id="menu_newMessage"
+              label="&newMessageCmd.label;"
+              accesskey="&newMessageCmd.accesskey;"
+              command="cmd_newMessage"
+              key="key_newMessage"
+              insertafter="navBeginGlobalNewItems"/>
+  </menupopup>
+
+  <menupopup id="menu_FilePopup">
+    <menuitem id="menu_sendPage"
+              label="&sendPage.label;"
+              accesskey="&sendPage.accesskey;"
+              command="cmd_sendPage"
+              position="9"/>
+    <menuitem id="menu_sendLink"
+              label="&sendLinkCmd.label;"
+              accesskey="&sendLinkCmd.accesskey;"
+              command="Browser:SendLink"
+              position="10"/>
+  </menupopup>
+
+  <menupopup id="contentAreaContextMenu">
+    <menuitem id="context-sendpage"
+              label="&contextSendThisPage.label;"
+              accesskey="&contextSendThisPage.accesskey;"
+              oncommand="sendPage();"
+              insertafter="context-savepage"/>
+    <menuitem id="context-sendimage"
+              label="&contextSendImage.label;"
+              accesskey="&contextSendImage.accesskey;"
+              oncommand="sendMedia(gContextMenu.mediaURL);"
+              insertafter="context-saveimage"/>
+    <menuitem id="context-sendvideo"
+              label="&contextSendVideo.label;"
+              accesskey="&contextSendVideo.accesskey;"
+              oncommand="sendMedia(gContextMenu.mediaURL);"
+              insertafter="context-savevideo"/>
+    <menuitem id="context-sendaudio"
+              label="&contextSendAudio.label;"
+              accesskey="&contextSendAudio.accesskey;"
+              oncommand="sendMedia(gContextMenu.mediaURL);"
+              insertafter="context-saveaudio"/>
+    <menuitem id="context-sendlink"
+              label="&contextSendThisLink.label;"
+              accesskey="&contextSendThisLink.accesskey;"
+              oncommand="sendLink(gContextMenu.linkURL);"
+              insertafter="context-savelink"/>
+    <menu id="frame">
+    <menupopup id="frame_popup">
+      <menuitem id="context-sendframe"
+                insertafter="context-saveframe"
+                label="&contextSendFrame.label;"
+                accesskey="&contextSendFrame.accesskey;"
+                oncommand="sendPage(gContextMenu.target.ownerDocument);"/>
+    </menupopup>
+    </menu>
+  </menupopup>
+
+</overlay>
+

@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<?xml-stylesheet href="chrome://messenger/skin/prefPanels.css" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://messenger/locale/pref-offline.dtd">
+
+<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <prefpane id="offline_pane"
+            label="&pref.network.title;"
+            script="chrome://messenger/content/pref-offline.js">
+
+    <preferences id="offline_preferences">
+      <preference id="offline.startup_state"
+                  name="offline.startup_state"
+                  type="int"/>
+      <preference id="offline.send.unsent_messages"
+                  name="offline.send.unsent_messages"
+                  type="int"/>
+      <preference id="offline.download.download_messages"
+                  name="offline.download.download_messages"
+                  type="int"/>
+      <preference id="mailnews.tcptimeout"
+                  name="mailnews.tcptimeout"
+                  type="int"/>
+      <preference id="mail.prompt_purge_threshhold"
+                  name="mail.prompt_purge_threshhold"
+                  type="bool"
+                  onchange="EnableMailPurgeThreshhold(this.value);"/>
+      <preference id="mail.purge_threshhold_mb"
+                  name="mail.purge_threshhold_mb"
+                  type="int"/>
+    </preferences>
+
+    <groupbox>
+      <caption label="&pref.offline.caption;"/>
+
+      <hbox align="center">
+        <label value="&textStartUp;" control="whenStartingUp"
+               accesskey="&textStartUp.accesskey;"/>
+        <menulist id="whenStartingUp" preference="offline.startup_state">
+          <menupopup>
+            <menuitem value="0" label="&menuitemRememberPrevState;"/>
+            <menuitem value="1" label="&menuitemAskMe;"/>
+            <menuitem value="2" label="&menuitemAlwaysOnline;"/>
+            <menuitem value="3" label="&menuitemAlwaysOffline;"/>
+            <menuitem value="4" label="&menuitemAutomatic;"/>
+          </menupopup>
+        </menulist>
+      </hbox>
+
+      <separator/>
+
+      <label value="&textGoingOnline;" control="whengoingOnlinestate"/>
+        <radiogroup id="whengoingOnlinestate"
+                    orient="horizontal" class="indent"
+                    preference="offline.send.unsent_messages">
+          <radio value="1" label="&radioAutoSend;"
+                 accesskey="&radioAutoSend.accesskey;"/>
+          <radio value="2" label="&radioNotSend;"
+                 accesskey="&radioNotSend.accesskey;"/>
+          <radio value="0" label="&radioAskUnsent;"
+                 accesskey="&radioAskUnsent.accesskey;"/>
+        </radiogroup>
+
+      <separator/>
+
+      <label value="&textGoingOffline;" control="whengoingOfflinestate"/>
+        <radiogroup id="whengoingOfflinestate"
+                    orient="horizontal" class="indent"
+                    preference="offline.download.download_messages">
+          <radio value="1" label="&radioAutoDownload;"
+                 accesskey="&radioAutoDownload.accesskey;"/>
+          <radio value="2" label="&radioNotDownload;"
+                 accesskey="&radioNotDownload.accesskey;"/>
+          <radio value="0" label="&radioAskDownload;"
+                 accesskey="&radioAskDownload.accesskey;"/>
+        </radiogroup>
+    </groupbox>
+
+    <groupbox>
+      <caption label="&mailConnections.caption;"/>
+      <hbox align="center">
+        <label id="timeoutLabel"
+               value="&mailnewsTimeout.label;"
+               accesskey="&mailnewsTimeout.accesskey;"
+               control="mailnewsTimeoutSeconds"/>
+        <textbox id="mailnewsTimeoutSeconds"
+                 type="number"
+                 size="4"
+                 preference="mailnews.tcptimeout"
+                 aria-labelledby="timeoutLabel mailnewsTimeoutSeconds timeoutSeconds"/>
+        <label id="timeoutSeconds" value="&mailnewsTimeoutSeconds.label;"/>
+      </hbox>
+    </groupbox>
+
+    <groupbox>
+      <caption label="&Diskspace;"/>
+      <hbox align="center">
+        <checkbox id="offlineCompactFolder"
+                  label="&offlineCompactFolders.label;"
+                  accesskey="&offlineCompactFolders.accesskey;"
+                  preference="mail.prompt_purge_threshhold"
+                  aria-labelledby="offlineCompactFolder offlineCompactFolderMin offlineCompactFolderMB"/>
+        <textbox id="offlineCompactFolderMin"
+                 type="number"
+                 size="4"
+                 min="1"
+                 max="2048"
+                 increment="10"
+                 value="20"
+                 preference="mail.purge_threshhold_mb"
+                 aria-labelledby="offlineCompactFolder offlineCompactFolderMin offlineCompactFolderMB"/>
+        <label id="offlineCompactFolderMB" value="&offlineCompactFoldersMB.label;"/>
+      </hbox>
+    </groupbox>
+  </prefpane>
+</overlay>

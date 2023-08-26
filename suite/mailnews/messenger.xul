@@ -1,0 +1,274 @@
+<?xml version="1.0"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+<?xml-stylesheet href="chrome://messenger/skin/mailWindow1.css" type="text/css"?>
+
+<?xul-overlay href="chrome://communicator/content/utilityOverlay.xul"?>
+<?xul-overlay href="chrome://messenger/content/threadPane.xul"?>
+<?xul-overlay href="chrome://messenger/content/folderPane.xul"?>
+<?xul-overlay href="chrome://messenger/content/mailWindowOverlay.xul"?>
+<?xul-overlay href="chrome://communicator/content/tasksOverlay.xul"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://branding/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % messengerDTD SYSTEM "chrome://messenger/locale/messenger.dtd" >
+%messengerDTD;
+]>
+
+<window id="messengerWindow"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:nc="http://home.netscape.com/NC-rdf#"
+        title="&messengerWindow.title;"
+        titlemodifier="&titleModifier.label;"
+        titlemenuseparator="&titleSeparator.label;"
+        onload="OnLoadMessenger()"
+        onunload="OnUnloadMessenger()"
+        onclose="return MailWindowIsClosing();"
+        screenX="10" screenY="10"
+        persist="width height screenX screenY sizemode"
+        toggletoolbar="true"
+        lightweightthemes="true"
+        lightweightthemesfooter="status-bar"
+        macanimationtype="document"
+        drawtitle="true"
+        windowtype="mail:3pane">
+
+<stringbundleset id="stringbundleset">
+  <stringbundle id="bundle_messenger" src="chrome://messenger/locale/messenger.properties"/>
+  <stringbundle id="bundle_brand" src="chrome://branding/locale/brand.properties"/>
+  <stringbundle id="bundle_search" src="chrome://messenger/locale/search.properties"/>
+</stringbundleset>
+
+<script type="application/javascript" src="chrome://messenger/content/widgetglue.js"/>
+<script type="application/javascript" src="chrome://messenger/content/commandglue.js"/>
+<script type="application/javascript" src="chrome://messenger/content/msgViewNavigation.js"/>
+<script type="application/javascript" src="chrome://messenger/content/mailWindow.js"/>
+<script type="application/javascript" src="chrome://messenger/content/msgMail3PaneWindow.js"/>
+<script type="application/javascript" src="chrome://messenger/content/mail3PaneWindowCommands.js"/>
+<script type="application/javascript" src="chrome://messenger/content/mailContextMenus.js"/>
+<script type="application/javascript" src="chrome://messenger/content/messengerdnd.js"/>
+<script type="application/javascript" src="chrome://messenger/content/accountUtils.js"/>
+<script type="application/javascript" src="chrome://messenger/content/phishingDetector.js"/>
+<script type="application/javascript" src="chrome://communicator/content/contentAreaClick.js"/>
+<script type="application/javascript" src="chrome://global/content/nsDragAndDrop.js"/>
+<script type="application/javascript" src="chrome://messenger/content/searchBar.js"/>
+<script type="application/javascript" src="chrome://messenger/content/tabmail.js"/>
+
+<commandset id="mailCommands">
+  <commandset id="mailFileMenuItems"/>
+  <commandset id="mailDownloadCommands"/>
+  <commandset id="mailViewMenuItems"/>
+  <commandset id="mailEditMenuItems"/>
+  <commandset id="mailEditContextMenuItems"/>
+  <commandset id="mailSearchMenuItems"/>
+  <commandset id="mailGoMenuItems"/>
+  <commandset id="mailMessageMenuItems"/>
+  <commandset id="mailToolbarItems"/>
+  <commandset id="mailGetMsgMenuItems"/>
+  <commandset id="mailMarkMenuItems"/>
+  <commandset id="mailToolsMenuItems"/>
+  <commandset id="globalEditMenuItems"/>
+  <commandset id="selectEditMenuItems"/>
+  <commandset id="clipboardEditMenuItems"/>
+  <commandset id="FocusRingUpdate_Mail"
+        commandupdater="true"
+        events="focus"
+        oncommandupdate="FocusRingUpdate_Mail()"/>
+  <commandset id="tasksCommands"/>
+</commandset>
+
+<broadcasterset id="mailBroadcasters">
+  <broadcaster id="mailHideMenus"/>
+  <broadcaster id="mailDisableKeys"/>
+  <broadcaster id="mailDisableViewsSearch" disabled="true"/>
+  <!-- File Menu -->
+  <broadcaster id="Communicator:WorkMode"/>
+</broadcasterset>
+
+<broadcasterset id="mainBroadcasterSet"/>
+
+<keyset id="mailKeys">
+  <keyset id="tasksKeys"/>
+</keyset>
+
+  <popupset id="mainPopupSet">
+    <menupopup id="mailContext"/>
+    <menupopup id="folderPaneContext"/>
+    <menupopup id="attachmentListContext"/>
+    <tooltip id="attachmentListTooltip"/>
+    <menupopup id="copyUrlPopup"/>
+    <menupopup id="messageIdContext"/>
+    <menupopup id="emailAddressPopup"/>
+    <menupopup id="toolbar-context-menu"/>
+    <tooltip id="folderpopup" class="folderSummaryPopup"/>
+    <tooltip id="aHTMLTooltip"
+             onpopupshowing="return FillInHTMLTooltip(document.tooltipNode);"/>
+    <panel id="customizeToolbarSheetPopup"/>
+    <menupopup id="networkProperties"/>
+    <menupopup id="remoteContentOptions"/>
+  </popupset>
+
+  <vbox id="titlebar"/>
+
+  <toolbox id="mail-toolbox" class="toolbox-top">
+    <toolbar id="mail-toolbar-menubar2"
+             type="menubar">
+      <toolbaritem id="menubar-items">
+        <menubar id="mail-menubar"/>
+      </toolbaritem>
+    </toolbar>
+    <toolbar id="msgToolbar"/>
+    <toolbarset id="customToolbars"/>
+    <toolbar id="searchToolbar"
+             class="chromeclass-toolbar"
+             persist="collapsed"
+             grippytooltiptext="&searchToolbar.tooltip;"
+             toolbarname="&showSearchToolbarCmd.label;"
+             accesskey="&showSearchToolbarCmd.accesskey;"
+             customizable="true"
+             nowindowdrag="true"
+             mode="full"
+             iconsize="small"
+             labelalign="end"
+             defaultmode="full"
+             defaulticonsize="small"
+             defaultlabelalign="end"
+             defaultset="mailviews-container,spring,search-container,button-search-container"
+             context="toolbar-context-menu"/>
+  </toolbox>
+
+  <!-- XXX This extension point (tabmail-container) is only temporary!
+           (See bug 460252 for details.)
+           We will readd a mechanism for sidebar panes in bug 178003.
+    -->
+  <hbox id="tabmail-container" flex="1">
+    <tabmail id="tabmail" flex="1" panelcontainer="tabpanelcontainer">
+      <box id="tabmail-buttons" orientation="horizontal"/>
+      <toolbar id="tabbar-toolbar"
+               xpfe="false"
+               toolboxid="mail-toolbox"
+               toolbarname="&showTabsToolbarCmd.label;"
+               accesskey="&showTabsToolbarCmd.accesskey;"
+               customizable="true"
+               nowindowdrag="true"
+               mode="icons"
+               iconsize="small"
+               labelalign="end"
+               defaultmode="icons"
+               defaulticonsize="small"
+               defaultlabelalign="end"
+               context="toolbar-context-menu"/>
+      <tabpanels id="tabpanelcontainer" flex="1" class="plain" selectedIndex="0">
+        <!-- The main mail three pane frame -->
+        <box id="mailContent" orient="vertical" flex="1">
+          <box id="messengerBox"
+               orient="horizontal"
+               flex="1"
+               minheight="100"
+               height="100"
+               persist="height">
+            <vbox id="folderPaneBox"
+                  minwidth="100"
+                  width="200"
+                  persist="collapsed width hidden">
+              <tree id="folderTree"
+                    treelines="true"
+                    keepcurrentinview="true"
+                    flex="1"
+                    context="folderPaneContext"
+                    class="window-focusborder"
+                    focusring="false">
+                <treechildren tooltip="folderpopup"/>
+              </tree>
+            </vbox>
+
+            <splitter id="folderpane-splitter"
+                      collapse="before"
+                      resizeafter="grow"
+                      persist="state collapsed"
+                      oncommand="MsgToggleFolderPane(false);">
+              <grippy/>
+            </splitter>
+
+            <box id="messagesBox"
+                 orient="vertical"
+                 flex="1"
+                 minwidth="100"
+                 width="100"
+                 persist="width">
+              <deck id="displayDeck"
+                    flex="1"
+                    selectedIndex="0"
+                    minheight="100"
+                    height="100"
+                    persist="height"
+                    onselect="ObserveDisplayDeckChange(event);">
+                <!-- first panel in displayDeck is Account Central -->
+                <vbox id="accountCentralBox">
+                  <iframe name="accountCentralPane"
+                          width="150"
+                          flex="1"
+                          src="about:blank"/>
+                </vbox>
+                <!-- second panel is the threadPane -->
+                <vbox id="threadPaneBox">
+                  <tree id="threadTree"
+                        treelines="true"
+                        keepcurrentinview="true"
+                        flex="1"
+                        context="mailContext"
+                        class="window-focusborder"
+                        focusring="false"/>
+                </vbox>
+                <!-- extensions may overlay in additional panels; don't assume that there are only 2! -->
+              </deck>
+
+              <!-- if you change this id, please change GetThreadAndMessagePaneSplitter() and MsgToggleMessagePane() -->
+              <splitter id="threadpane-splitter"
+                        collapse="after"
+                        persist="state collapsed hidden"
+                        collapsed="true"
+                        oncommand="MsgToggleMessagePane(false);">
+                <grippy/>
+              </splitter>
+
+              <notificationbox id="messagepanebox"
+                               flex="2"
+                               minheight="100"
+                               height="200"
+                               minwidth="100"
+                               width="200"
+                               persist="height width"
+                               class="browser-notificationbox window-focusborder"
+                               focusring="false">
+                <hbox id="msgHeaderView"/>
+                <!-- The messagepanewrapper hbox exists to allow extensions
+                     to add sidebars to the message pane. -->
+                <hbox id="messagepanewrapper" flex="1">
+                  <browser id="messagepane"
+                           name="messagepane"
+                           height="0"
+                           flex="1"
+                           minwidth="1"
+                           minheight="1"
+                           tooltip="aHTMLTooltip"
+                           context="mailContext"
+                           disablesecurity="true"
+                           disablehistory="true"
+                           autofind="false"
+                           type="content-primary"
+                           onresize="return messagePaneOnResize(event);"
+                           onclick="return messagePaneOnClick(event);"/>
+                </hbox>
+              </notificationbox>
+            </box>
+          </box>
+        </box>
+      </tabpanels>
+    </tabmail>
+  </hbox>
+
+  <statusbar id="status-bar" class="chromeclass-status mailwindow-statusbar"/>
+</window>

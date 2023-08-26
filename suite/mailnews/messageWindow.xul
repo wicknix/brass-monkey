@@ -1,0 +1,143 @@
+<?xml version="1.0"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+<?xml-stylesheet href="chrome://messenger/skin/messageWindow.css" type="text/css"?>
+
+<?xul-overlay href="chrome://communicator/content/utilityOverlay.xul"?>
+<?xul-overlay href="chrome://messenger/content/mailWindowOverlay.xul"?>
+<?xul-overlay href="chrome://communicator/content/tasksOverlay.xul"?>
+
+<!DOCTYPE window [
+<!ENTITY % brandDTD SYSTEM "chrome://branding/locale/brand.dtd" >
+%brandDTD;
+<!ENTITY % messengerDTD SYSTEM "chrome://messenger/locale/messenger.dtd" >
+%messengerDTD;
+]>
+
+<window id="messengerWindow"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:nc="http://home.netscape.com/NC-rdf#"
+        title="&messengerWindow.title;"
+        titlemodifier="&titleModifier.label;"
+        titlemenuseparator="&titleSeparator.label;"
+        onload="OnLoadMessageWindow()"
+        onunload="OnUnloadMessageWindow()"
+        width="750"
+        height="500"
+        persist="width height screenX screenY sizemode"
+        toggletoolbar="true"
+        lightweightthemes="true"
+        lightweightthemesfooter="status-bar"
+        macanimationtype="document"
+        drawtitle="true"
+        windowtype="mail:messageWindow">
+
+  <stringbundleset id="stringbundleset">
+    <stringbundle id="bundle_brand" src="chrome://branding/locale/brand.properties"/>
+    <stringbundle id="bundle_messenger" src="chrome://messenger/locale/messenger.properties"/>
+    <stringbundle id="bundle_offlinePrompts" src="chrome://messenger/locale/offline.properties"/>
+  </stringbundleset>
+
+  <script type="application/javascript" src="chrome://messenger/content/commandglue.js"/>
+  <script type="application/javascript" src="chrome://messenger/content/mailWindow.js"/>
+  <script type="application/javascript" src="chrome://messenger/content/messageWindow.js"/>
+  <script type="application/javascript" src="chrome://messenger/content/accountUtils.js"/>
+  <script type="application/javascript" src="chrome://messenger/content/mailContextMenus.js"/>
+  <script type="application/javascript" src="chrome://messenger/content/phishingDetector.js"/>
+  <script type="application/javascript" src="chrome://communicator/content/contentAreaClick.js"/>
+  <script type="application/javascript" src="chrome://global/content/nsDragAndDrop.js"/>
+  <script type="application/javascript" src="chrome://messenger/content/msgViewNavigation.js"/>
+  <script type="application/javascript" src="chrome://messenger/content/widgetglue.js"/>
+  <script type="application/javascript" src="chrome://messenger/content/tabmail.js"/>
+
+  <commandset id="mailCommands">
+    <commandset id="mailFileMenuItems"/>
+    <commandset id="mailDownloadCommands"/>
+    <commandset id="mailViewMenuItems"/>
+    <commandset id="mailEditMenuItems"/>
+    <commandset id="mailSearchMenuItems"/>
+    <commandset id="mailGoMenuItems"/>
+    <commandset id="mailMessageMenuItems"/>
+    <commandset id="mailToolbarItems"/>
+    <commandset id="mailGetMsgMenuItems"/>
+    <commandset id="mailMarkMenuItems"/>
+    <commandset id="mailToolsMenuItems"/>
+    <commandset id="mailEditContextMenuItems"/>
+	  <commandset id="tasksCommands"/>
+    <commandset id="commandKeys"/>
+  </commandset>
+
+  <broadcasterset id="mailBroadcasters">
+    <broadcaster id="mailHideMenus" hidden="true"/>
+    <broadcaster id="mailDisableKeys" disabled="true"/>
+    <!-- File Menu -->
+    <broadcaster id="Communicator:WorkMode"/>
+    <!-- Edit Menu -->
+  </broadcasterset>
+
+  <broadcasterset id="mainBroadcasterSet"/>
+
+  <keyset id="mailKeys">
+    <keyset id="tasksKeys"/>
+    <key keycode="VK_ESCAPE" oncommand="window.close();"/>
+  </keyset>
+
+  <popupset id="messagePopupSet">
+    <menupopup id="mailContext"/>
+    <menupopup id="attachmentListContext"/>
+    <menupopup id="copyUrlPopup"/>
+    <menupopup id="messageIdContext"/>
+    <menupopup id="emailAddressPopup"/>
+    <menupopup id="toolbar-context-menu"/>
+    <menupopup id="remoteContentOptions"/>
+    <tooltip id="aHTMLTooltip"
+             onpopupshowing="return FillInHTMLTooltip(document.tooltipNode);"/>
+    <panel id="customizeToolbarSheetPopup"/>
+  </popupset>
+
+  <vbox id="titlebar"/>
+
+  <toolbox id="mail-toolbox">
+    <toolbar id="mail-toolbar-menubar2">
+      <toolbaritem id="menubar-items">
+        <menubar id="mail-menubar"/>
+      </toolbaritem>
+    </toolbar>
+    <toolbar id="msgToolbar"/>
+    <toolbarset id="customToolbars"/>
+  </toolbox>
+
+ <!-- msg header view -->
+<vbox id="messagesBox" flex="1">
+  <notificationbox id="messagepanebox"
+                   class="browser-notificationbox"
+                   flex="3"
+                   persist="collapsed"
+                   ondragover="nsDragAndDrop.dragOver(event, messagepaneObserver);"
+                   ondrop="nsDragAndDrop.drop(event, messagepaneObserver);"
+                   ondragexit="nsDragAndDrop.dragExit(event, messagepaneObserver);">
+
+    <hbox id="msgHeaderView"/>
+
+    <!-- message view -->
+    <browser id="messagepane"
+             name="messagepane"
+             height="0"
+             flex="1"
+             minwidth="1"
+             minheight="1"
+             context="mailContext"
+             tooltip="aHTMLTooltip"
+             disablesecurity="true"
+             disablehistory="true"
+             autofind="false"
+             type="content-primary"
+             onresize="return messagePaneOnResize(event);"
+             onclick="return messagePaneOnClick(event);"/>
+  </notificationbox>
+</vbox>
+
+  <statusbar class="chromeclass-status" id="status-bar"/>
+
+</window>

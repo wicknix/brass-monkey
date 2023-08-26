@@ -1,0 +1,38 @@
+# vim: set filetype=python:
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+DIRS += [
+    'public',
+    'src',
+]
+
+BROWSER_CHROME_MANIFESTS += [
+    'downloads/tests/browser/browser.ini',
+    'places/tests/browser/browser.ini',
+    'tests/browser/browser.ini',
+    'tests/preferences/browser.ini',
+]
+
+MOCHITEST_CHROME_MANIFESTS += [
+    'downloads/tests/chrome/chrome.ini',
+    'places/tests/chrome/chrome.ini',
+    'tests/chrome/chrome.ini',
+]
+
+XPCSHELL_TESTS_MANIFESTS += [
+    'places/tests/autocomplete/xpcshell.ini',
+    'places/tests/unit/xpcshell.ini',
+]
+
+JAR_MANIFESTS += ['jar.mn']
+
+# DEFINES for preprocessing
+# Use suite/common/app-license.html as input when generating 
+# chrome://content/communicator/license.html to override 
+# chrome://global/content/license.html (about:license)
+DEFINES['APP_LICENSE_BLOCK'] = '%s/app-license.html' % SRCDIR
+
+for var in ('MOZ_APP_NAME', 'MOZ_MACBUNDLE_NAME'):
+    DEFINES[var] = CONFIG[var]

@@ -1,0 +1,21 @@
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# Note: mac icons are handled in /suite/app during the final application
+# packaging
+
+include $(topsrcdir)/config/rules.mk
+
+export::
+	$(NSINSTALL) -D $(DIST)/branding
+ifeq (cocoa,$(MOZ_WIDGET_TOOLKIT))
+	$(NSINSTALL) -D $(DIST)/branding
+	$(NSINSTALL) -D $(DIST)/branding/icons
+	cp $(srcdir)/icons/mac/document.icns          $(DIST)/branding/icons/document.icns
+	cp $(srcdir)/icons/mac/brassmonkey.icns       $(DIST)/branding/icons/brassmonkey.icns
+	cp $(srcdir)/package/mac/dsstore              $(DIST)/branding/dsstore
+	cp $(srcdir)/package/mac/background.png       $(DIST)/branding/background.png
+	cp $(srcdir)/package/mac/disk.icns            $(DIST)/branding/disk.icns
+endif

@@ -1,0 +1,187 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* ===== messageBody.css =================================================
+  == Styles for the body of a mail message.
+  ======================================================================= */
+
+@import url(chrome://communicator/skin/smileys.css);
+@import url(chrome://messenger/skin/messageQuotes.css);
+
+@namespace url("http://www.w3.org/1999/xhtml");
+
+/* :::: message header ::::: */
+
+.header-part1 {
+  background-color: #EFEFEF;
+}
+
+.header-part2,
+.header-part3 {
+  background-color: #DEDEDE;
+}
+
+.headerdisplayname {
+  display: inline;
+  font-weight: bold;
+  white-space: pre;
+}
+
+/* ::::: message text, incl. quotes ::::: */
+
+.moz-text-flowed blockquote,
+.moz-text-plain blockquote {
+  margin: 0;
+}
+
+.moz-text-plain pre {
+  margin: 0;
+  font-family: inherit;
+}
+
+.moz-text-plain[wrap="true"] {
+  white-space: pre-wrap;
+}
+
+.moz-text-plain[wrap="false"] {
+  white-space: pre;
+}
+
+.moz-text-plain[wrap="flow"] .moz-txt-sig {
+  white-space: pre-wrap;
+}
+
+.moz-text-plain[graphical-quote="false"] blockquote {
+  border-style: none;
+  padding: 0;
+}
+
+.moz-text-plain[graphical-quote="true"] .moz-txt-citetags {
+  display: none;
+}
+
+.moz-txt-underscore {
+  text-decoration: underline;
+}
+
+.moz-txt-formfeed {
+  display: block;
+  height: 100%;
+}
+
+/* ::::: signature ::::: */
+
+@media not print {
+  .moz-txt-sig,
+  .moz-signature {
+    opacity: 0.5;
+  }
+
+  .moz-txt-sig .moz-txt-sig,
+  .moz-signature .moz-signature {
+    opacity: 1.0;
+  }
+}
+
+/* ::::: vcard ::::: */
+
+.moz-vcard-table {
+  border-radius: 8px;
+  border: thin solid gray;
+  margin-top: 10px;
+}
+
+.moz-vcard-property {
+  font-size: 80%;
+  color: gray;
+}
+
+.moz-vcard-title-property {
+} 
+
+.moz-vcard-badge {
+  height: 30px;
+  width: 30px;
+  display: block;
+  background-image: url("chrome://messenger/skin/icons/messengericons.png");
+  background-position: 0px -270px;
+}
+
+.moz-vcard-badge:hover {
+  background-position: -30px -270px;
+  outline: 1px dotted;
+}
+
+.moz-vcard-badge:hover:active {
+  background-position: -60px -270px;
+}
+
+/* ::::: attached images ::::: */
+.moz-attached-image {
+  image-orientation: from-image;
+}
+
+.moz-attached-image[overflowing="true"] { 
+  cursor: zoom-out;
+}
+
+.moz-attached-image[isshrunk="true"] { 
+  cursor: zoom-in;
+  max-width: 100%;
+}
+
+/* New style feed summary body. */
+body[selected="false"] {
+  display: none;
+}
+
+/* Old style feeds. */
+#_mailrssiframe {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Attachment display styling (for inline attachments and printing) */
+.mimeAttachmentHeader {
+  border-style: none;
+  border-top: 1px solid gray;
+}
+
+.mimeAttachmentHeaderName {
+  color: gray;
+  font-size: 80%;
+}
+
+.mimeAttachmentWrap {
+  padding: 0 1em;
+}
+
+.mimeAttachmentTable {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.mimeAttachmentTable tr + tr > td {
+  border-top: 1px solid gray;
+}
+
+.mimeAttachmentFile {
+  word-wrap: break-word;
+}
+
+.mimeAttachmentSize {
+  vertical-align: top;
+  width: 10ch;
+  text-align: right;
+}
+
+.mimeAttachmentFile,
+.mimeAttachmentSize {
+  padding: 0.25em 0;
+}

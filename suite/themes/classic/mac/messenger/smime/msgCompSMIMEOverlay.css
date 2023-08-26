@@ -1,0 +1,68 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* ===== msgCompSMIMEOverlay.css ========================================
+  == Styles for the S/Mime in composer window.
+  ======================================================================= */
+
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+#button-security {
+  list-style-image: url("chrome://messenger/skin/smime/icons/smimeicons.png");
+  -moz-image-region: rect(0 29px 29px 0px);
+}
+
+#button-security:hover:active,
+#button-security[open] {
+  -moz-image-region: rect(0 59px 29px 30px);
+}
+
+#button-security[disabled] {
+  -moz-image-region: rect(0 89px 29px 60px) !important;
+}
+
+toolbar[iconsize="small"] > #button-security,
+toolbar[iconsize="small"] > toolbarpaletteitem > #button-security {
+  list-style-image: url("chrome://messenger/skin/smime/icons/smimeicons-small.png");
+  -moz-image-region: rect(0 19px 19px 0px);
+}
+
+toolbar[iconsize="small"] > #button-security:hover:active,
+toolbar[iconsize="small"] > #button-security[open] {
+  -moz-image-region: rect(0 39px 19px 20px);
+}
+
+toolbar[iconsize="small"] > #button-security[disabled] {
+  -moz-image-region: rect(0 59px 19px 40px) !important;
+}
+
+#msgcomposeWindow #signing-status {
+  list-style-image: none;
+  visibility: collapse;
+}
+
+#msgcomposeWindow[signing="ok"] #signing-status {
+  list-style-image: url("chrome://messenger/skin/smime/icons/sbSignOk.gif");
+  visibility: visible;
+}
+
+#msgcomposeWindow[signing="notok"] #signing-status {
+  list-style-image: url("chrome://messenger/skin/smime/icons/sbSignNotOk.gif");
+  visibility: visible;
+}
+
+#msgcomposeWindow #encryption-status {
+  list-style-image: none;
+  visibility: collapse;
+}
+
+#msgcomposeWindow[crypto="ok"] #encryption-status {
+  list-style-image: url("chrome://messenger/skin/smime/icons/sbCryptoOk.gif");
+  visibility: visible;
+}
+
+#msgcomposeWindow[crypto="notok"] #encryption-status {
+  list-style-image: url("chrome://messenger/skin/smime/icons/sbCryptoNotOk.gif");
+  visibility: visible;
+}

@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<?xul-overlay href="chrome://communicator/content/platformCommunicatorOverlay.xul"?>
+
+<?xml-stylesheet href="chrome://messenger/skin/" type="text/css"?>
+<!-- Mac needs dialog.css to correctly style the moved Help button -->
+<?xml-stylesheet href="chrome://global/skin/dialog.css" type="text/css"?>
+
+<!DOCTYPE dialog [
+<!ENTITY % mailViewLisDTD SYSTEM "chrome://messenger/locale/mailViewList.dtd">
+%mailViewLisDTD;
+<!ENTITY % FilterListDialogDTD SYSTEM "chrome://messenger/locale/FilterListDialog.dtd">
+%FilterListDialogDTD;
+]>
+
+<dialog id="mailViewListDialog"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        onload="MailViewListOnLoad();"
+        onunload="MailViewListOnUnload();"
+        ondialogaccept="return false;"
+        windowtype="mailnews:mailviewlist"
+        title="&mailViewListTitle.label;"
+        width="400" height="340"
+        buttons=","
+        persist="screenX screenY width height">
+
+  <script type="application/javascript" src="chrome://messenger/content/mailViewList.js"/>
+  <script type="application/javascript" src="chrome://global/content/globalOverlay.js"/>
+
+  <commandset id="mailViewCommands">
+    <command id="cmd_new"    oncommand="goDoCommand('cmd_new');"/>
+    <command id="cmd_edit"   oncommand="goDoCommand('cmd_edit');"   disabled="true"/>
+    <command id="cmd_delete" oncommand="goDoCommand('cmd_delete');" disabled="true"/>
+  </commandset>
+
+  <keyset id="mailViewListKeys">
+    <key id="key_delete"/>
+    <key id="key_delete2"/>
+    <key id="key_open" keycode="VK_RETURN" command="cmd_edit"/>
+  </keyset>
+
+  <vbox flex="1">
+    <hbox flex="1">
+      <listbox id="mailViewList"
+               flex="1"
+               onselect="OnMailViewSelect(event);"
+               ondblclick="OnMailViewDoubleClick(event);">
+        <listcols>
+          <listcol flex="1" width="0"/>
+        </listcols>
+        <listhead>
+          <listheader label="&viewName.label;"/>
+        </listhead>
+      </listbox>
+
+      <vbox id="buttonCol">
+        <button id="newButton"
+                label="&newButton.label;"
+                accesskey="&newButton.accesskey;"
+                command="cmd_new"/>
+        <button id="editButton"
+                label="&editButton.label;"
+                accesskey="&editButton.accesskey;"
+                command="cmd_edit"/>
+        <button id="deleteButton"
+                label="&deleteButton.label;"
+                accesskey="&deleteButton.accesskey;"
+                command="cmd_delete"/>
+        <spacer flex="1"/>
+        <button id="helpButton"
+                dlgtype="help"
+                class="dialog-button"/>
+      </vbox>
+    </hbox>
+  </vbox>
+</dialog>

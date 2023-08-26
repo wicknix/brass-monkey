@@ -1,0 +1,57 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* ===== searchDialog.css ===============================================
+  == Styles for the Mail Search dialog.
+  ======================================================================= */
+
+@import url("chrome://messenger/skin/");
+
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+/* ::::: box sizes ::::: */
+
+#searchTermTree {
+  min-height: 50px;
+}
+
+#searchTermListBox {
+  height: 100px;
+}
+
+#searchResultListBox {
+  margin: 5px;
+  height: 100px;
+}
+
+#searchAddressBookWindow,
+#searchMailWindow {
+  padding: 0px;
+}
+
+.search-menulist[unavailable="true"] {
+  color: GrayText;
+}
+
+menulist:not(#menuSearchLocalSystem) {
+  width: 12em;
+}
+
+menulist:not(#menuSearchLocalSystem) > menupopup > menuitem {
+  padding-inline-end: 2px;
+}
+
+textbox {
+  margin: 1px 4px;
+}
+
+.filler {
+  padding-inline-end: 22px;
+}
+
+.small-button {
+  min-width: 3em;
+  padding: 0px;
+  margin: 0px 1px;
+}

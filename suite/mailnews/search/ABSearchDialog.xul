@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+<?xml-stylesheet href="chrome://messenger/skin/searchDialog.css" type="text/css"?>
+
+<?xul-overlay href="chrome://messenger/content/addressbook/abResultsPaneOverlay.xul"?>
+<?xul-overlay href="chrome://messenger/content/searchTermOverlay.xul"?>
+<?xul-overlay href="chrome://communicator/content/utilityOverlay.xul"?>
+
+<!DOCTYPE dialog [
+<!ENTITY % abResultsPaneOverlayDTD SYSTEM "chrome://messenger/locale/addressbook
+/abResultsPaneOverlay.dtd">
+%abResultsPaneOverlayDTD;
+<!ENTITY % SearchDialogDTD SYSTEM "chrome://messenger/locale/SearchDialog.dtd">
+%SearchDialogDTD;
+]>
+
+<dialog id="searchAddressBookWindow"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:nc="http://home.netscape.com/NC-rdf#"
+        windowtype="mailnews:absearch"
+        title="&abSearchDialogTitle.label;"
+        style="width: 52em; height: 34em;"
+        persist="screenX screenY width height sizemode"
+        buttons="help"
+        ondialoghelp="return openHelp('mail_advanced_ab_search');"
+        onload="searchOnLoad();"
+        onunload="onSearchStop(); searchOnUnload();">
+
+  <stringbundleset id="stringbundleset">
+    <stringbundle id="bundle_addressBook" src="chrome://messenger/locale/addressbook/addressBook.properties"/>
+    <stringbundle id="bundle_search" src="chrome://messenger/locale/search.properties"/>
+    <stringbundle id="bundle_messenger" src="chrome://messenger/locale/messenger.properties"/>
+    <stringbundle id="bundle_brand" src="chrome://branding/locale/brand.properties"/>
+  </stringbundleset>
+
+  <script type="application/javascript"
+          src="chrome://messenger/content/mailWindow.js"/>
+  <script type="application/javascript"
+          src="chrome://messenger/content/msgMail3PaneWindow.js"/>
+  <script type="application/javascript"
+          src="chrome://global/content/globalOverlay.js"/>
+  <script type="application/javascript"
+          src="chrome://messenger/content/commandglue.js"/>
+  <script type="application/javascript"
+          src="chrome://messenger/content/ABSearchDialog.js"/>
+  <script type="application/javascript"
+          src="chrome://messenger/content/addressbook/abCommon.js"/>
+
+  <broadcaster id="Communicator:WorkMode"/>
+
+  <dummy class="usesMailWidgets"/>
+
+    <vbox id="searchTerms" flex="3" persist="height">
+      <vbox>
+        <hbox align="center">
+          <label value="&abSearchHeading.label;" accesskey="&abSearchHeading.accesskey;" control="abPopup"/>
+          <menulist id="abPopup" oncommand="SelectDirectory(this.value);">
+            <menupopup id="abPopup-menupopup" class="addrbooksPopup"/>
+          </menulist>
+          <spacer flex="10"/>
+          <button id="search-button" oncommand="onSearchButton(event);" default="true"/>
+        </hbox>
+        <hbox align="center">
+          <spacer flex="1"/>
+          <button label="&resetButton.label;" oncommand="onAbSearchReset(event);" accesskey="&resetButton.accesskey;"/>
+        </hbox>
+      </vbox>
+
+      <hbox flex="1">
+        <vbox id="searchTermListBox" flex="1"/>
+      </hbox>
+    </vbox>
+
+    <splitter id="gray_horizontal_splitter" collapse="after" persist="state">
+      <grippy/>
+    </splitter>
+
+    <vbox id="searchResults" flex="4" persist="height">
+      <vbox id="searchResultListBox" flex="1">
+        <tree id="abResultsTree" flex="1" context="threadPaneContext"/>
+      </vbox>
+      <hbox align="center">
+        <button id="propertiesButton"
+                label="&propertiesButton.label;"
+                accesskey="&propertiesButton.accesskey;"
+                disabled="true"
+                oncommand="onProperties();"/>
+        <button id="composeButton"
+                label="&composeButton.label;"
+                accesskey="&composeButton.accesskey;"
+                disabled="true"
+                oncommand="onCompose();"/>
+        <spacer flex="1"/>
+        <button dlgtype="help" class="dialog-button"/>
+      </hbox>
+    </vbox>
+
+  <statusbar class="chromeclass-status" id="status-bar">
+    <statusbarpanel id="statusText" crop="right" flex="1"/>
+    <statusbarpanel id="offline-status" class="statusbarpanel-iconic"/>
+  </statusbar>
+
+</dialog>

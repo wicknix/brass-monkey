@@ -1,0 +1,61 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* ===== accountManage.css ==============================================
+  == Styles for the Mail Account Manager.
+  ======================================================================= */
+
+@import url("chrome://messenger/skin/");
+
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+/* ::::: account manager :::::: */
+
+.specialFolderPickerGrid {
+  margin-inline-start: 20px;
+}
+
+.fccReplyFollowsParent {
+  margin-inline-start: 20px;
+}
+
+.selectForOfflineUseButton {
+  list-style-image: url("chrome://communicator/skin/icons/offline.gif");
+}
+
+.selectForOfflineUseButton > .button-box > .button-icon {
+  margin-inline-start: 4px;
+  margin-inline-end: 4px;
+}
+
+.signatureBox {
+  font-family: -moz-fixed;
+}
+
+listitem[default="true"],
+#identitiesList > listitem:first-child {
+  font-weight: bold;
+}
+
+treechildren::-moz-tree-cell-text(isDefaultServer-true) {
+  text-decoration: underline;
+}
+
+#accounttree treechildren::-moz-tree-indentation {
+  width: 1ch;
+}
+
+/* ::::: SMTP Server Panel :::::: */
+
+.smtpServerListItem {
+  padding-inline-start: 3px;
+}
+
+#backgroundBox {
+  background-color: ThreeDLightShadow;
+}
+
+#smtpServerInfoBox textbox {
+  background-color: transparent;
+}

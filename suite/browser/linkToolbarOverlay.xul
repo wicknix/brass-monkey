@@ -1,0 +1,176 @@
+<?xml version="1.0"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<?xml-stylesheet href="chrome://navigator/skin/linkToolbar.css" type="text/css"?>
+<!DOCTYPE overlay SYSTEM "chrome://navigator/locale/linkToolbar.dtd">
+
+<overlay id="linkToolbarOverlay"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+         xmlns:rdf="http://www.mozilla.org/rdf">
+
+  <!-- classes -->
+  <script type="application/javascript" src="chrome://global/content/globalOverlay.js"/>
+  <script type="application/javascript" src="chrome://navigator/content/linkToolbarHandler.js" />
+  <script type="application/javascript" src="chrome://navigator/content/linkToolbarItem.js" />
+
+  <!-- functions -->
+  <script type="application/javascript" src="chrome://navigator/content/linkToolbarOverlay.js" />
+
+  <script type="application/javascript">
+    <![CDATA[
+      document.addEventListener("pageshow", linkToolbarUI.initHandlers, true);
+    ]]>
+  </script>
+
+  <stringbundleset>
+    <stringbundle id="languageBundle"
+                  src="chrome://global/locale/languageNames.properties"/>
+  </stringbundleset>
+
+  <menupopup id="view_toolbars_popup">
+    <menu label="&linkToolbar.label;"
+          accesskey="&linkToolbar.accesskey;"
+          insertbefore="menuitem_showhide_tabbar"
+          onpopupshowing="linkToolbarUI.initLinkbarVisibilityMenu();"
+          oncommand="linkToolbarUI.toggleLinkToolbar(event.target);">
+      <menupopup>
+        <menuitem label="&linkToolbarAlways.label;"
+                  accesskey="&linkToolbarAlways.accesskey;"
+                  class="menuitem-iconic" type="radio" value="false"
+                  name="cmd_viewlinktoolbar" id="cmd_viewlinktoolbar_false" />
+        <menuitem label="&linkToolbarAsNeeded.label;"
+                  accesskey="&linkToolbarAsNeeded.accesskey;"
+                  class="menuitem-iconic" type="radio" value="maybe"
+                  name="cmd_viewlinktoolbar" id="cmd_viewlinktoolbar_maybe" />
+        <menuitem label="&linkToolbarNever.label;"
+                  accesskey="&linkToolbarNever.accesskey;"
+                  class="menuitem-iconic" type="radio" value="true"
+                  name="cmd_viewlinktoolbar" id="cmd_viewlinktoolbar_true" />
+      </menupopup>
+    </menu>
+  </menupopup>
+
+  <toolbox id="navigator-toolbox">
+    <toolbar id="linktoolbar"
+             grippytooltiptext="&linkToolbar.tooltip;"
+             class="chromeclass-directories"
+             hidden="true"
+             hasitems="false"
+             nowindowdrag="true"
+             oncommand="event.stopPropagation(); return linkToolbarUI.commanded(event);">
+
+      <toolbarbutton id="link-top" class="bookmark-item"
+          label="&topButton.label;" disabled="true"/>
+
+      <toolbarbutton id="link-up" class="bookmark-item"
+          label="&upButton.label;" disabled="true"/>
+
+      <toolbarseparator />
+
+      <toolbarbutton id="link-first" class="bookmark-item"
+          label="&firstButton.label;" disabled="true"/>
+
+      <toolbarbutton id="link-prev" class="bookmark-item"
+          label="&prevButton.label;" disabled="true"/>
+
+      <toolbarbutton id="link-next" class="bookmark-item"
+          label="&nextButton.label;" disabled="true"/>
+
+      <toolbarbutton id="link-last" class="bookmark-item"
+          label="&lastButton.label;" disabled="true"/>
+
+      <toolbarseparator />
+
+      <toolbarbutton id="document-menu" class="bookmark-item"
+          type="menu"
+          container="true"
+          label="&documentButton.label;" disabled="true">
+        <menupopup id="document-menu-popup">
+
+          <menuitem id="link-toc" label="&tocButton.label;" disabled="true"
+              class="menuitem-iconic bookmark-item"
+              rdf:type="rdf:http://www.w3.org/1999/02/22-rdf-syntax-ns#type" />
+          <menu id="link-chapter" label="&chapterButton.label;" disabled="true"
+              class="menu-iconic bookmark-item" container="true"
+              rdf:type="rdf:http://www.w3.org/1999/02/22-rdf-syntax-ns#type">
+            <menupopup id="link-chapter-popup" />
+          </menu>
+          <menu id="link-section" label="&sectionButton.label;" disabled="true"
+              class="menu-iconic bookmark-item" container="true"
+              rdf:type="rdf:http://www.w3.org/1999/02/22-rdf-syntax-ns#type">
+            <menupopup id="link-section-popup" />
+          </menu>
+          <menu id="link-subsection" label="&subSectionButton.label;" disabled="true"
+              class="menu-iconic bookmark-item" container="true"
+              rdf:type="rdf:http://www.w3.org/1999/02/22-rdf-syntax-ns#type">
+            <menupopup id="link-subsection-popup" />
+          </menu>
+          <menu id="link-appendix" label="&appendixButton.label;" disabled="true"
+              class="menu-iconic bookmark-item" container="true"
+              rdf:type="rdf:http://www.w3.org/1999/02/22-rdf-syntax-ns#type">
+            <menupopup id="link-appendix-popup" />
+          </menu>
+          <menuitem id="link-glossary" label="&glossaryButton.label;" disabled="true"
+              class="menuitem-iconic bookmark-item"
+              rdf:type="rdf:http://www.w3.org/1999/02/22-rdf-syntax-ns#type" />
+          <menuitem id="link-index" label="&indexButton.label;" disabled="true"
+              class="menuitem-iconic bookmark-item"
+              rdf:type="rdf:http://www.w3.org/1999/02/22-rdf-syntax-ns#type" />
+
+        </menupopup>
+      </toolbarbutton>
+
+      <toolbarbutton id="more-menu" class="bookmark-item"
+          type="menu"
+          container="true"
+          label="&moreButton.label;" disabled="true">
+        <menupopup id="more-menu-popup">
+
+          <menuitem id="link-help" label="&helpButton.label;" disabled="true"
+              class="menuitem-iconic bookmark-item"
+              rdf:type="rdf:http://www.w3.org/1999/02/22-rdf-syntax-ns#type" />
+          <menuitem id="link-search" label="&searchButton.label;" disabled="true"
+              class="menuitem-iconic bookmark-item"
+              rdf:type="rdf:http://www.w3.org/1999/02/22-rdf-syntax-ns#type" />
+
+          <menuseparator />
+
+          <menuitem id="link-author" label="&authorButton.label;" disabled="true"
+              class="menuitem-iconic bookmark-item"
+              rdf:type="rdf:http://www.w3.org/1999/02/22-rdf-syntax-ns#type" />
+          <menuitem id="link-copyright" label="&copyrightButton.label;" disabled="true"
+              class="menuitem-iconic bookmark-item"
+              rdf:type="rdf:http://www.w3.org/1999/02/22-rdf-syntax-ns#type" />
+
+          <menuseparator />
+
+          <menu id="link-bookmark" label="&bookmarkButton.label;" disabled="true"
+              class="menu-iconic bookmark-item" container="true"
+              rdf:type="rdf:http://www.w3.org/1999/02/22-rdf-syntax-ns#type">
+            <menupopup id="link-bookmark-popup" />
+          </menu>
+
+          <menuseparator />
+
+          <menu id="link-alternate" label="&alternateButton.label;" disabled="true"
+              class="menu-iconic bookmark-item" container="true"
+              rdf:type="rdf:http://www.w3.org/1999/02/22-rdf-syntax-ns#type">
+            <menupopup id="link-alternate-popup" />
+          </menu>
+
+          <menuseparator collapsed="true" id="misc-separator" />
+
+        </menupopup>
+      </toolbarbutton>
+
+      <toolbarbutton id="link-feed" class="bookmark-item"
+          type="menu"
+          container="true"
+          label="&feedButton.label;" disabled="true">
+        <menupopup id="link-feed-popup"/>
+      </toolbarbutton>
+    </toolbar>
+  </toolbox>
+</overlay>

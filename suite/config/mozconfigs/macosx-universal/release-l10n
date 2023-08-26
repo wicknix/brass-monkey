@@ -1,0 +1,20 @@
+. $topsrcdir/build/macosx/universal/mozconfig.common
+. $topsrcdir/suite/config/mozconfigs/mozconfig.macosx.common
+
+ac_add_options --with-l10n-base=../../l10n
+ac_add_options --enable-application=suite
+ac_add_options --enable-update-channel=${MOZ_UPDATE_CHANNEL}
+
+# Build lightning locales
+ac_add_options --enable-calendar
+mk_add_options MOZ_POSTFLIGHT_ALL+=calendar/lightning/build/universal.mk
+
+# Needed to enable breakpad in application.ini
+export MOZILLA_OFFICIAL=1
+
+# Disable checking that add-ons are signed by the trusted root
+MOZ_ADDON_SIGNING=0
+# Disable enforcing that add-ons are signed by the trusted root
+MOZ_REQUIRE_SIGNING=0
+
+. "$topsrcdir/build/mozconfig.rust"

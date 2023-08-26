@@ -1,0 +1,169 @@
+<?xml version="1.0"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<?xml-stylesheet href="chrome://messenger/skin/filterDialog.css" type="text/css"?>
+<?xml-stylesheet href="chrome://messenger/skin/folderMenus.css" type="text/css"?>
+
+<?xul-overlay href="chrome://communicator/content/utilityOverlay.xul"?>
+
+<!DOCTYPE dialog SYSTEM "chrome://messenger/locale/FilterListDialog.dtd">
+
+<dialog id="filterListDialog"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        windowtype="mailnews:filterlist"
+        title="&filterListDialog.title;"
+        style="width: 45em; height: 31em;"
+        persist="width height screenX screenY"
+        buttons="help"
+        ondialoghelp="return openHelp('mail-filters');"
+        onload="onLoad();"
+        onunload="onFilterUnload();"
+        onclose="return onFilterClose();">
+
+  <script type="application/javascript"
+          src="chrome://messenger/content/FilterListDialog.js"/>
+  <stringbundle id="bundle_filter"
+                src="chrome://messenger/locale/filter.properties"/>
+
+  <keyset id="filterKeys">
+    <key id="key_selectAll"/>
+  </keyset>
+
+  <grid flex="1">
+    <columns>
+      <column flex="1"/>
+      <column/>
+    </columns>
+    <rows>
+      <row>
+        <hbox align="center">
+          <label value="&filtersForPrefix.label;"
+                 accesskey="&filtersForPrefix.accesskey;"
+                 control="serverMenu"/>
+
+          <menulist id="serverMenu"
+                    class="folderMenuItem"
+                    IsServer="true"
+                    IsSecure="false"
+                    ServerType="none">
+            <menupopup id="serverMenuPopup"
+                       class="menulist-menupopup"
+                       type="folder"
+                       mode="filters"
+                       expandFolders="nntp"
+                       showFileHereLabel="true"
+                       showAccountsFileHere="true"
+                       oncommand="onFolderSelect(event.target._folder)"/>
+          </menulist>
+          <spacer flex="1"/>
+        </hbox>
+        <button label="&viewLogButton.label;"
+                accesskey="&viewLogButton.accesskey;"
+                oncommand="viewLog();"/>
+      </row>
+
+      <row>
+        <separator/>
+      </row>
+
+      <row>
+        <label id="filterHeader" control="filterTree">&filterHeader.label;</label>
+      </row>
+
+      <row flex="1">
+        <tree id="filterTree"
+              hidecolumnpicker="true"
+              onselect="onFilterSelect(event);"
+              onkeypress="onFilterTreeKeyPress(event);"
+              ondblclick="onFilterDoubleClick(event);">
+
+          <treecols>
+            <treecol id="nameColumn"
+                     flex="1"
+                     label="&nameColumn.label;"
+                     sort="?Name"/>
+            <treecol id="activeColumn"
+                     label="&activeColumn.label;"
+                     cycler="true"/>
+          </treecols>
+
+          <treechildren/>
+        </tree>
+        <vbox>
+          <button id="newButton"
+                  label="&newButton.label;"
+                  accesskey="&newButton.accesskey;"
+                  oncommand="onNewFilter(null);"/>
+          <button id="editButton"
+                  label="&editButton.label;"
+                  accesskey="&editButton.accesskey;"
+                  oncommand="onEditFilter();"/>
+          <button id="deleteButton"
+                  label="&deleteButton.label;"
+                  accesskey="&deleteButton.accesskey;"
+                  oncommand="onDeleteFilter();"/>
+          <spacer flex="1"/>
+          <button id="reorderUpButton"
+                  label="&reorderUpButton.label;"
+                  accesskey="&reorderUpButton.accesskey;"
+                  class="up"
+                  oncommand="onUp(event);"/>
+          <button id="reorderDownButton"
+                  label="&reorderDownButton.label;"
+                  accesskey="&reorderDownButton.accesskey;"
+                  class="down"
+                  oncommand="onDown(event);"/>
+          <spacer flex="1"/>
+        </vbox>
+      </row>
+
+      <row align="center">
+        <hbox align="center">
+          <label id="folderPickerPrefix"
+                 value="&folderPickerPrefix.label;"
+                 accesskey="&folderPickerPrefix.accesskey;"
+                 disabled="true"
+                 control="runFiltersFolder"/>
+
+          <menulist id="runFiltersFolder"
+                    flex="1"
+                    disabled="true"
+                    class="folderMenuItem"
+                    displayformat="verbose">
+            <menupopup id="runFiltersPopup"
+                       class="menulist-menupopup"
+                       type="folder"
+                       showFileHereLabel="true"
+                       showAccountsFileHere="false"
+                       oncommand="onTargetSelect(event);"/>
+          </menulist>
+          <spacer flex="1"/>
+          <button id="runFiltersButton"
+                  label="&runFilters.label;"
+                  accesskey="&runFilters.accesskey;"
+                  runlabel="&runFilters.label;"
+                  runaccesskey="&runFilters.accesskey;"
+                  stoplabel="&stopFilters.label;"
+                  stopaccesskey="&stopFilters.accesskey;"
+                  disabled="true"
+                  oncommand="runSelectedFilters();"/>
+        </hbox>
+        <vbox align="center">
+          <button dlgtype="help" class="dialog-button"/>
+        </vbox>
+      </row>
+    </rows>
+  </grid>
+
+  <statusbar class="chromeclass-status" id="status-bar">
+    <statusbarpanel class="statusbarpanel-progress">
+      <progressmeter id="statusbar-icon"
+                     class="progressmeter-statusbar"
+                     mode="normal"
+                     value="0"/>
+    </statusbarpanel>
+    <statusbarpanel id="statusText" crop="right" flex="1"/>
+  </statusbar>
+</dialog>

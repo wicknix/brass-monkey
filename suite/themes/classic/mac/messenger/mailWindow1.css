@@ -1,0 +1,306 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* ===== mailWindow1.css ================================================
+  == Styles for the main Mail window in the default layout scheme.
+  ======================================================================= */
+
+@import url("chrome://messenger/skin/");
+@import url("chrome://messenger/skin/primaryToolbar.css");
+@import url("chrome://messenger/skin/folderMenus.css");
+
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+#messengerWindow {
+  -moz-appearance: none;
+  background-color: #EEEEEE;
+}
+
+#messengerBox {
+  border-top: 1px solid #A1A1A1;
+}
+
+/* :::::
+   :: Make sure the min height is small so we can
+   :: resize the pane vertically -EDV
+   ::::: */
+
+#messagepanebox {
+  min-height: 10px;
+  height: 0px;
+}
+
+#messagepanebox:-moz-lwtheme {
+  background-color: -moz-dialog;
+}
+
+#searchToolbar {
+  -moz-appearance: none;
+  background-color: #CDCDCD;
+  background-image: url("chrome://communicator/skin/toolbar/toolbar-gradient34.png");
+  background-repeat: repeat-x;
+  border-bottom: 1px solid #9F9F9F;
+}
+
+#searchToolbar:-moz-lwtheme {
+  background-image: none;
+  background-color: transparent;
+}
+
+/* Leopard-styled "zero-width" vertical splitter */
+
+#folderpane-splitter {
+  border: solid #B3B3B3;
+  border-width: 0 1px 0 0;
+  min-width: 1px;
+  background-image: none;
+}
+
+/* Make sure users find the splitter when it's collapsed... */
+
+#folderpane-splitter[state="collapsed"] {
+  min-width: 5px;
+  background-color: #D6DDE5;
+}
+
+/* Thick horisontal splitter */
+
+#threadpane-splitter {
+  background-color: -moz-dialog;
+  border: solid #B3B3B3;
+  border-width: 0 0 0 1px;
+}
+
+/* Thick vertical splitter */
+
+#threadpane-splitter[orient="vertical"] {
+  border: solid #A5A5A5;
+  border-width: 1px 0;
+}
+
+/* ..... tree adjustments ..... */
+
+#folderTree {
+  min-width: 1px;
+  -moz-appearance: -moz-mac-source-list;
+}
+
+.tree-stack > .tree-rows > .tree-bodybox {
+  border: none;
+}
+
+#folderTree > treechildren::-moz-tree-row {
+  background-color: transparent;
+}
+
+#folderTree > treechildren::-moz-tree-row(selected) {
+  -moz-appearance: -moz-mac-source-list-selection;
+}
+
+#folderTree > treechildren::-moz-tree-row(selected, focus) {
+  -moz-appearance: -moz-mac-active-source-list-selection;
+}
+
+#folderTree > treechildren::-moz-tree-cell-text(selected) {
+  color: #FFFFFF;
+}
+
+#folderTree > treechildren::-moz-tree-twisty {
+  -moz-appearance: none;
+  width: 16px;
+  padding-bottom: 1px;
+  padding-inline-end: 4px;
+  list-style-image: url("chrome://global/skin/tree/arrow-disclosure.svg#arrow-disclosure-collapsed");
+}
+
+#folderTree > treechildren::-moz-tree-twisty(closed, selected) {
+  list-style-image: url("chrome://global/skin/tree/arrow-disclosure.svg#arrow-disclosure-collapsed-inverted");
+}
+
+#folderTree > treechildren::-moz-tree-twisty(open) {
+  list-style-image: url("chrome://global/skin/tree/arrow-disclosure.svg#arrow-disclosure-expanded");
+}
+
+#folderTree > treechildren::-moz-tree-twisty(open, selected) {
+  list-style-image: url("chrome://global/skin/tree/arrow-disclosure.svg#arrow-disclosure-expanded-inverted");
+}
+
+#folderTree > treechildren:-moz-locale-dir(rtl)::-moz-tree-twisty(closed) {
+  list-style-image: url("chrome://global/skin/tree/arrow-disclosure.svg#arrow-disclosure-collapsed-rtl");
+}
+
+#folderTree > treechildren:-moz-locale-dir(rtl)::-moz-tree-twisty(closed, selected) {
+  list-style-image: url("chrome://global/skin/tree/arrow-disclosure.svg#arrow-disclosure-collapsed-inverted-rtl");
+}
+
+@media (-moz-mac-yosemite-theme) {
+  #folderTree > treechildren::-moz-tree-cell-text(selected) {
+    color: -moz-dialogtext;
+  }
+
+  #folderTree > treechildren::-moz-tree-cell-text(selected, focus) {
+    color: #FFFFFF;
+  }
+
+  #folderTree > treechildren::-moz-tree-twisty(closed, selected) {
+    list-style-image: url("chrome://global/skin/tree/arrow-disclosure.svg#arrow-disclosure-collapsed");
+  }
+
+  #folderTree > treechildren::-moz-tree-twisty(closed, selected, focus) {
+    list-style-image: url("chrome://global/skin/tree/arrow-disclosure.svg#arrow-disclosure-collapsed-inverted");
+  }
+
+  #folderTree > treechildren::-moz-tree-twisty(open, selected) {
+    list-style-image: url("chrome://global/skin/tree/arrow-disclosure.svg#arrow-disclosure-expanded");
+  }
+
+  #folderTree > treechildren::-moz-tree-twisty(open, selected, focus) {
+    list-style-image: url("chrome://global/skin/tree/arrow-disclosure.svg#arrow-disclosure-expanded-inverted");
+  }
+
+  #folderTree > treechildren:-moz-locale-dir(rtl)::-moz-tree-twisty(closed, selected) {
+    list-style-image: url("chrome://global/skin/tree/arrow-disclosure.svg#arrow-disclosure-collapsed-rtl");
+  }
+
+  #folderTree > treechildren:-moz-locale-dir(rtl)::-moz-tree-twisty(closed, selected, focus) {
+    list-style-image: url("chrome://global/skin/tree/arrow-disclosure.svg#arrow-disclosure-collapsed-inverted-rtl")
+  }
+}
+
+#threadTree {
+  min-width: 1px;
+}
+
+#locationIcon {
+  list-style-image: none;
+}
+
+/* ..... message pane adjustments ..... */
+
+#msgHeaderView {
+  border-left: none !important;
+}
+
+#messagepane {
+  border: 1px solid transparent;
+  border-right: none;
+}
+
+#messagepanebox[focusring="true"] > #messagepanewrapper > #messagepane {
+  border-color: -moz-mac-focusring;
+}
+
+/* ..... folder pane adjustments ..... */
+
+.folderview-cycler,
+.folderview-cycler > .toolbarbutton-icon {
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+}
+
+.folderview-cycler > .toolbarbutton-text {
+  display: none;
+}
+
+.folderview-cycler[dir="prev"],
+.folderview-cycler[dir="next"]:-moz-locale-dir(rtl) {
+  list-style-image: url("chrome://messenger/skin/icons/spin-buttons.png");
+  -moz-image-region: rect(0 15px 16px 0);
+}
+
+.folderview-cycler[dir="next"],
+.folderview-cycler[dir="prev"]:-moz-locale-dir(rtl) {
+  list-style-image: url("chrome://messenger/skin/icons/spin-buttons.png");
+  -moz-image-region: rect(0 31px 16px 15px);
+}
+
+.folderview-cycler:active {
+  list-style-image: url("chrome://messenger/skin/icons/spin-buttons-active.png") !important;
+}
+
+/* ..... tabmail ..... */
+
+.tabmail-strip {
+  padding-bottom: 3px;
+  background-color: #E8E8E8;
+}
+
+.tabmail-strip:-moz-lwtheme {
+  background-color: transparent;
+}
+
+.tab-close-button {
+  margin: 0;
+}
+
+.tab-scrollbutton-up,
+.tab-scrollbutton-down {
+  border: 0;
+  padding: 0 4px;
+  margin: 0;
+}
+
+.tab-scrollbutton-up:-moz-locale-dir(ltr),
+.tab-scrollbutton-down:-moz-locale-dir(rtl) {
+  border-right: 2px solid;
+  -moz-border-right-colors: rgba(0, 0, 0, 0.19) transparent;
+  list-style-image: url("chrome://messenger/skin/icons/tab-arrow-left.png");
+  -moz-image-region: rect(0, 7px, 11px, 0);
+}
+
+.tab-scrollbutton-up[disabled="true"]:-moz-locale-dir(ltr),
+.tab-scrollbutton-down[disabled="true"]:-moz-locale-dir(rtl) {
+  -moz-image-region: rect(0, 14px, 11px, 7px);
+  -moz-border-right-colors: transparent transparent;
+}
+
+.tab-scrollbutton-down:-moz-locale-dir(ltr),
+.tab-scrollbutton-up:-moz-locale-dir(rtl) {
+  border-left: 2px solid;
+  -moz-border-left-colors: rgba(0, 0, 0, 0.19) transparent;
+  list-style-image: url("chrome://messenger/skin/icons/tab-arrow-right.png");
+  -moz-image-region: rect(0, 7px, 11px, 0);
+}
+
+.tab-scrollbutton-down[disabled="true"]:-moz-locale-dir(ltr),
+.tab-scrollbutton-up[disabled="true"]:-moz-locale-dir(rtl) {
+  -moz-image-region: rect(0, 14px, 11px, 7px);
+  -moz-border-left-colors: transparent transparent;
+}
+
+.tab-scrollbutton-up:hover:not([disabled="true"]),
+.tab-scrollbutton-down:hover:not([disabled="true"]) {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.tab-scrollbutton-up:hover:active:not([disabled="true"]),
+.tab-scrollbutton-down:hover:active:not([disabled="true"]) {
+  background-color: rgba(0, 0, 0 , 0.2);
+}
+
+.tabmail-tab[type="message"] .tab-icon {
+  margin-top: -2px;
+}
+
+.tabmail-tab[type="folder"][NewMessages="true"],
+.tabmail-tab[type="folder"][IsServer="true"] {
+  font-weight: bold;
+}
+
+.alltabs-item[tabIsScrolled] {
+  font-style: italic;
+}
+
+#tabbar-toolbar {
+  -moz-appearance: none;
+  min-height: 0;
+}
+
+#tabbar-toolbar > .toolbarbutton-1 {
+  margin-top: 1px;
+  margin-bottom: 1px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
