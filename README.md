@@ -1,11 +1,5 @@
 # BrassMonkey Internet Suite for MacOS 10.7 - 12.6
 
-> All your Internet needs in one application.
-
-## The Goal
-
-To honor the legacy of the Netscape/Mozilla Internet Suite.
-
 ## What's Included
 
 * Web Browser
@@ -34,3 +28,5 @@ To honor the legacy of the Netscape/Mozilla Internet Suite.
 ## Licensing
 
 This repository is primarily licensed under the [MPL Version 2.0](http://mozilla.org/MPL/2.0/).
+
+![BrassMonkey](https://github.com/wicknix/brass-monkey/assets/39230578/c730be41-17b4-4ec4-94d6-cc8c68f1d4e4)
