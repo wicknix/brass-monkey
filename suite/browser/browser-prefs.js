@@ -92,7 +92,7 @@ pref("browser.findbar.enabled", true);
 pref("browser.doorhanger.enabled", true);
 
 // search engines URL
-pref("browser.search.searchEnginesURL", "");
+pref("browser.search.searchEnginesURL", "https://addons.thunderbird.net/en-uS/seamonkey/search-tools/");
 
 // pointer to the default engine name
 pref("browser.search.defaultenginename", "chrome://communicator-region/locale/region.properties");
@@ -106,7 +106,7 @@ pref("browser.search.order.2", "chrome://communicator-region/locale/region.prope
 pref("browser.search.order.3", "chrome://communicator-region/locale/region.properties");
 
 // Search (side)bar results always open in a new tab.
-pref("browser.search.openintab", false);
+pref("browser.search.openintab", true);
 
 // Invoking a search reveals the sidebar panel.
 pref("browser.search.opensidebarsearchpanel", false);
@@ -455,7 +455,7 @@ pref("app.releaseNotesURL", "chrome://branding/locale/brand.properties");
 pref("app.vendorURL", "chrome://branding/locale/brand.properties");
 
 // Base URL for web-based support pages.
-pref("app.support.baseURL", "https://github.com/wicknix/BrassMonkey/issues");
+pref("app.support.baseURL", "https://github.com/wicknix/brass-monkey/issues");
 
 // App-specific update preferences
 
@@ -469,10 +469,10 @@ pref("app.update.auto", true);
 pref("app.update.silent", false);
 
 // Update service URL:
-pref("app.update.url", "https://github.com/wicknix");
+pref("app.update.url", "https://github.com/wicknix/brass-monkey");
 // URL user can browse to manually if for some reason all update installation
 // attempts fail.
-pref("app.update.url.manual", "https://github.com/wicknix/BrassMonkey");
+pref("app.update.url.manual", "https://github.com/wicknix/brass-monkey");
 // A default value for the "More information about this update" link
 // supplied in the "An update is available" page of the update wizard.
 pref("app.update.url.details", "chrome://communicator-region/locale/region.properties");
@@ -559,15 +559,15 @@ pref("extensions.autoDisableScopes", 15);
 // Preferences for AMO integration
 pref("extensions.getAddons.cache.enabled", false);  // This also toggles personalized recommendations
 //pref("extensions.getAddons.maxResults", 15);
-pref("extensions.getAddons.get.url", "https://addons.palemoon.org/extensions/");
+pref("extensions.getAddons.get.url", "");
 pref("extensions.getAddons.getWithPerformance.url", "");
 pref("extensions.getAddons.compatOverides.url", "");
-pref("extensions.getAddons.link.url", "https://addons.palemoon.org/extensions/");
+pref("extensions.getAddons.link.url", "");
 pref("extensions.getAddons.recommended.url", "");
-pref("extensions.getAddons.search.browseURL", "https://addons.thunderbird.net/en-US/seamonkey/search-tools/");
-pref("extensions.getAddons.search.url", "https://addons.thunderbird.net/en-US/seamonkey/search-tools/");
+pref("extensions.getAddons.search.browseURL", "");
+pref("extensions.getAddons.search.url", "");
 pref("extensions.getAddons.themes.browseURL", "https://addons.thunderbird.net/en-US/seamonkey/complete-themes/");
-pref("extensions.getAddons.siteRegExp", "https://addons.palemoon.org/extensions/");
+pref("extensions.getAddons.siteRegExp", "");
 pref("extensions.webservice.discoverURL", "");
 
 // Blocklist preferences
