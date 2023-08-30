@@ -21,9 +21,6 @@ DIRS += [
     'smile',
 ]
 
-if CONFIG['MAKENSISU']:
-    DIRS += ['installer/windows']
-
 # app is always last as it packages up the built files on mac.
 DIRS += [
     'build',

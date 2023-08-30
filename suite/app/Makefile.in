@@ -2,12 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-AB_CD = $(MOZ_UI_LOCALE) 
-
-DEFINES += \
-	-DNETFUSION_ICO=\"$(DIST)/branding/brassmonkey.ico\" \
-	-DHTML_FILE_ICO=\"$(DIST)/branding/html-file.ico\" \
-	$(NULL)
+AB_CD = $(MOZ_UI_LOCALE)
 
 # Build a binary bootstrapping with XRE_main
 
@@ -24,14 +19,6 @@ endif
 NSDISTMODE = copy
 
 include $(topsrcdir)/config/config.mk
-
-ifeq ($(OS_ARCH),WINNT)
-# Rebuild seamonkey.exe if the manifest changes - it's included by splash.rc.
-# (this dependency should really be just for seamonkey.exe, not other targets)
-# Note the manifest file exists in the tree, so we use the explicit filename
-# here.
-EXTRA_DEPS += brassmonkey.exe.manifest
-endif
 
 include $(topsrcdir)/config/rules.mk
 
