@@ -23,7 +23,7 @@
 * WebRTC
 * WebExtensions
 * Language Packs
-* Windows Support (most of that code has been removed)
+* MS Windows Support (that code has been mostly removed)
 
 ## Licensing
 
