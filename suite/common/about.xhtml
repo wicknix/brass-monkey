@@ -25,17 +25,20 @@
 
 <body dir="&locale.dir;">
   <div id="aboutLogoContainer">
-    <a id="vendorURL" href="about:blank">
+    <a id="vendorURL" href="https://github.com/wicknix/">
       <img src="about:logo" alt="&brandShortName;"/>
+      <p id="version">&about.version; </p>
     </a>
   </div>
 
   <ul id="aboutPageList">
+    <li>&channel.description.start;<strong id="currentChannel"/>&channel.description.end;</li>
     <li>&about.credits.beforeLink;<a href="about:credits">&about.credits.linkTitle;</a>&about.credits.afterLink;</li>
     <li>&about.license.beforeTheLink;<a href="about:license">&about.license.linkTitle;</a>&about.license.afterTheLink;</li>
     <li>&about.relnotes.beforeTheLink;<a id="releaseNotesURL" href="">&about.relnotes.linkTitle;</a>&about.relnotes.afterTheLink;</li>
     <li>&about.buildconfig.beforeTheLink;<a href="about:buildconfig">&about.buildconfig.linkTitle;</a>&about.buildconfig.afterTheLink;</li>
     <li id="userAgent" hidden="true">&about.userAgent;</li>
+    <li id="buildID" hidden="true">&about.buildIdentifier;</li>
   </ul>
 
 </body>
