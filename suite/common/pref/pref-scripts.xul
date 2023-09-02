@@ -15,6 +15,17 @@
                   name="javascript.enabled"
                   type="bool"
                   onchange="javascriptEnabledChange();"/>
+
+      <preference id="javascript.options.mem.gc_incremental"
+                  name="javascript.options.mem.gc_incremental"
+                  type="bool"/>
+      <preference id="javascript.options.mem.gc_generational"
+                  name="javascript.options.mem.gc_generational"
+                  type="bool"/>
+      <preference id="javascript.options.wasm"
+                  name="javascript.options.wasm"
+                  type="bool"/>
+
       <preference id="dom.disable_window_move_resize"
                   name="dom.disable_window_move_resize"
                   type="bool" inverted="true"/>
@@ -30,9 +41,7 @@
       <preference id="dom.event.contextmenu.enabled"
                   name="dom.event.contextmenu.enabled"
                   type="bool"/>
-      <preference id="media.eme.enabled"
-                  name="media.eme.enabled"
-                  type="bool"/>
+
       <preference id="plugin.disable"
                   name="plugin.disable"
                   type="bool" inverted="true"/>
@@ -44,7 +53,7 @@
                   type="int"/>
     </preferences>
 
-    <groupbox id="javascriptPreferences" flex="1">
+    <groupbox id="javascriptPreferences">
       <caption label="&enableJavaScript.label;"/>
 
       <checkbox id="javascriptAllowNavigator"
@@ -52,12 +61,31 @@
                 accesskey="&navigator.accesskey;"
                 preference="javascript.enabled"/>
 
+      <separator class="thin"/>
+
+      <label control="FeatureList"
+             value="&featureList.label;"
+             accesskey="&featureList.accesskey;"/>
+
+      <listbox id="FeatureList" rows="5">
+        <listitem type="checkbox" id="featureIncrementalGC"
+                  label="&featureIncrementalGC.label;"
+                  preference="javascript.options.mem.gc_incremental"/>
+        <listitem type="checkbox" id="featureGenerationalGC"
+                  label="&featureGenerationalGC.label;"
+                  preference="javascript.options.mem.gc_generational"/>
+        <listitem type="checkbox" id="featureWASM"
+                  label="&featureWASM.label;"
+                  preference="javascript.options.wasm"/>
+      </listbox>
+
+      <separator class="thin"/>
+
       <label control="AllowList"
-             class="indent"
              value="&allowScripts.label;"
              accesskey="&allowScripts.accesskey;"/>
 
-      <listbox id="AllowList" class="indent" flex="1">
+      <listbox id="AllowList" rows="5">
         <listitem type="checkbox" id="allowWindowMoveResize"
                   label="&allowWindowMoveResize.label;"
                   preference="dom.disable_window_move_resize"/>
@@ -76,17 +104,6 @@
       </listbox>
     </groupbox>
 
-    <!-- REMOVE #ifndef once EME are ready for prime time, meta bug 1015800 -->
-#ifndef RELEASE_OR_BETA
-    <groupbox id="drmPreferences">
-      <caption label="&enableDrmMedia.label;"/>
-      <checkbox id="emeForSuite"
-                label="&enableEmeForSuite.label;"
-                accesskey="&enableEmeForSuite.accesskey;"
-                preference="media.eme.enabled"/>
-    </groupbox>
-#endif
-
     <groupbox id="pluginPreferences">
       <caption label="&enablePlugins.label;"/>
       <checkbox id="pluginForSuite"
@@ -94,12 +111,12 @@
                 accesskey="&enablePluginForSuite.accesskey;"
                 preference="plugin.disable"/>
 
-      <!-- mailnews will add its checkbox here using overlay (mailPrefsOverlay.xul).
-      -->
-    </groupbox>
+      <separator class="thin"/>
 
-    <groupbox id="pageRequiresPlugins">
-      <caption label="&whenPageRequiresPlugins.label;"/>
+<!--      <label value="&whenPageRequiresPlugins.label;"/> -->
+
+      <separator class="thin"/>
+
       <checkbox id="activateAllPlugins"
                 label="&activateAllPlugins.label;"
                 accesskey="&activateAllPlugins.accesskey;"
@@ -111,6 +128,5 @@
                 accesskey="&warnPluginsRequired.accesskey;"
                 preference="plugins.hide_infobar_for_missing_plugin"/>
     </groupbox>
-
   </prefpane>
 </overlay>
