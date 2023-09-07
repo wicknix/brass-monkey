@@ -38,5 +38,5 @@
 <!--ENTITY whenPageRequiresPlugins.label   "When a page requires plugins:"-->
 <!ENTITY activateAllPlugins.label        "Activate all plugins">
 <!ENTITY activateAllPlugins.accesskey    "d">
-<!ENTITY warnPluginsRequired.label       "Warn me if more need to be installed">
+<!ENTITY warnPluginsRequired.label       "Warn on new plugin install">
 <!ENTITY warnPluginsRequired.accesskey   "W">
