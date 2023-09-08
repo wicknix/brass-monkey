@@ -25,6 +25,12 @@
 * Language Packs
 * MS Windows Support (that code has been mostly removed)
 
+## Installing Extensions and Themes
+
+* BrassMonkey uses SeaMonkey's UUID but it has a higher version number.
+* You'll need to edit the xpi's install.rdf and increase the min/max versions.
+* Minimum version should be 32.4.0 and max can just be an asterisc *
+
 ## Licensing
 
 This repository is primarily licensed under the [MPL Version 2.0](http://mozilla.org/MPL/2.0/).
