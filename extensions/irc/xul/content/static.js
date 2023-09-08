@@ -546,10 +546,10 @@ function initApplicationCompatibility()
                 // We ARE the app, in other words, we're running in XULRunner.
                 client.host = "XULRunner";
                 break;
-            case "{8de7fcbb-c55c-4fbe-bfc5-fc555c87dbc4}": // BrassMonkey
+            case "{8de7fcbb-c55c-4fbe-bfc5-fc555c87dbc4}": // SeaLion
                 client.host = "Mozilla";
                 break;
-            case "{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}": // SeaMonkey
+            case "{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}": // BrassMonkey
                 client.host = "Mozilla";
                 break;
             case "{a463f10c-3994-11da-9945-000d60ca027b}": // Flock

@@ -16,7 +16,7 @@ MOZ_BRANDING_DIRECTORY=suite/branding/unofficial
 MOZ_OFFICIAL_BRANDING_DIRECTORY=suite/branding/unofficial
 MOZ_EXTENSIONS_DEFAULT=" gio"
 MOZ_UPDATER=1
-MOZILLA_OFFICIAL=
+MOZILLA_OFFICIAL=1
 UXP_APPCOMPAT_GUID=1
 # This should usually be the same as the value MAR_CHANNEL_ID.
 # If more than one ID is needed, then you should use a comma separated list
@@ -45,7 +45,7 @@ BRASSMONKEY_VERSION=$MOZ_APP_VERSION
 
 MOZ_UA_BUILDID=20100101
 
-MOZ_APP_ID={8de7fcbb-c55c-4fbe-bfc5-fc555c87dbc4}
+MOZ_APP_ID={92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}
 MOZ_PROFILE_MIGRATOR=1
 MOZ_APP_STATIC_INI=1
 MOZ_SEPARATE_MANIFEST_FOR_THEME_OVERRIDES=1
