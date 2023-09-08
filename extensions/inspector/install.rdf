@@ -42,7 +42,7 @@
       </Description>
     </em:targetApplication>
 
-    <!-- BrassMonkey -->
+    <!-- SeaLion -->
     <em:targetApplication>
       <Description>
         <em:id>{8de7fcbb-c55c-4fbe-bfc5-fc555c87dbc4}</em:id>
@@ -51,7 +51,7 @@
       </Description>
     </em:targetApplication>
 
-    <!-- SeaMonkey
+    <!-- BrassMonkey
          2.0 is Gecko 1.9.1
          2.1 is Gecko 2.0
          2.2 is Gecko 5.0
@@ -59,8 +59,8 @@
     <em:targetApplication>
       <Description>
         <em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
-        <em:minVersion>2.1</em:minVersion>
-        <em:maxVersion>2.54</em:maxVersion>
+        <em:minVersion>32.2.1</em:minVersion>
+        <em:maxVersion>*</em:maxVersion>
       </Description>
     </em:targetApplication>
 
