@@ -29,7 +29,7 @@
 
 * BrassMonkey uses SeaMonkey's UUID but it has a higher version number.
 * You'll need to edit the xpi's install.rdf and increase the min/max versions.
-* Minimum version should be 32.4.0 and max can just be an asterisc *
+* Minimum version should be 32.4.0 and max can just be an asterisk *
 * Or grab the Extras.zip for common extensions already edited for BrassMonkey.
 * Drag and drop the extensions xpi file on to a browser window or tab to install.
 
