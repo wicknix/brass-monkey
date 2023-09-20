@@ -41,6 +41,7 @@ pref("general.smoothScroll", false);
 pref("general.autoScroll", true);
 
 pref("general.useragent.compatMode.firefox", true);
+pref("general.useragent.compatMode.gecko", true);
 
 pref("general.useragent.complexOverride.moodle", false); // bug 797703; bug 815801
 

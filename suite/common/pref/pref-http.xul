@@ -27,6 +27,9 @@
       <preference id="general.useragent.compatMode.firefox"
                   name="general.useragent.compatMode.firefox"
                   type="bool"/>
+      <preference id="general.useragent.compatMode.gecko"
+                  name="general.useragent.compatMode.gecko"
+                  type="bool"/>
     </preferences>
 
     <description>&prefPara;</description>
@@ -87,6 +90,10 @@
                 label="&prefFirefoxCompat.label;"
                 accesskey="&prefFirefoxCompat.accesskey;"
                 preference="general.useragent.compatMode.firefox"/>
+      <checkbox id="uaGeckoCompat"
+                label="&prefGeckoCompat.label;"
+                accesskey="&prefGeckoCompat.accesskey;"
+                preference="general.useragent.compatMode.gecko"/>
     </groupbox>
 
     <description>&prefCompatWarning;</description>
