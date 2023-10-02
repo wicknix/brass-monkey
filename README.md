@@ -1,4 +1,4 @@
-# BrassMonkey Internet Suite for MacOS 10.7 - 12.6
+# BrassMonkey Internet Suite
 
 ## What's Included
 
@@ -23,7 +23,7 @@
 * WebRTC
 * WebExtensions
 * Language Packs
-* MS Windows Support (that code has been mostly removed)
+* MS Windows Support
 
 ## Installing Extensions and Themes
 
@@ -38,4 +38,6 @@
 This repository is primarily licensed under the [MPL Version 2.0](http://mozilla.org/MPL/2.0/).
 
 ![BrassMonkeyMac](https://github.com/wicknix/brass-monkey/assets/39230578/f9d50f59-b2f3-4be1-ab2d-9c7adab7e76d)
+
+![brassmonkey-ppclinux](https://github.com/wicknix/brass-monkey/assets/39230578/2605d58c-7ade-4045-9b2e-df055659db7e)
 
