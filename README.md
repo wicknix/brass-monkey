@@ -39,5 +39,4 @@ This repository is primarily licensed under the [MPL Version 2.0](http://mozilla
 
 ![BrassMonkeyMac](https://github.com/wicknix/brass-monkey/assets/39230578/f9d50f59-b2f3-4be1-ab2d-9c7adab7e76d)
 
-![brassmonkey-ppclinux](https://github.com/wicknix/brass-monkey/assets/39230578/2605d58c-7ade-4045-9b2e-df055659db7e)
 
