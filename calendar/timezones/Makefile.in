@@ -4,7 +4,7 @@
 
 XPI_PKGNAME = calendar-timezones-$(TIMEZONES_VERSION)
 
-THUNDERBIRD_VERSION := $(shell cat $(topsrcdir)/mail/config/version.txt)
+THUNDERBIRD_VERSION := $(shell cat $(topsrcdir)/suite/config/version.txt)
 SEAMONKEY_VERSION := $(shell cat $(topsrcdir)/suite/config/version.txt)
 CALENDAR_VERSION := $(shell $(PYTHON) $(topsrcdir)/calendar/lightning/build/makeversion.py $(word 1,$(MOZ_PKG_VERSION) $(THUNDERBIRD_VERSION)))
 TIMEZONES_VERSION := $(shell $(PYTHON) $(srcdir)/version.py)

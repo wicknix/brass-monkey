@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # Lighting version number
-THUNDERBIRD_VERSION := $(shell cat $(topsrcdir)/mail/config/version.txt)
+THUNDERBIRD_VERSION := $(shell cat $(topsrcdir)/suite/config/version.txt)
 SEAMONKEY_VERSION := $(shell cat $(topsrcdir)/suite/config/version.txt)
 
 ifdef MOZ_SUITE
