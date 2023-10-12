@@ -54,6 +54,7 @@ endif
 
 ifdef MOZ_CALENDAR
 DEFINES += -DMOZ_CALENDAR=1
+endif
 
 ifdef MOZ_DEBUG
 DEFINES += -DMOZ_DEBUG=1
