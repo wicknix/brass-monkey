@@ -28,3 +28,39 @@ MOZ_ARG_ENABLE_BOOL(inspector,
     MOZ_INSPECTOR=1,
     MOZ_INSPECTOR= )
 AC_SUBST(MOZ_INSPECTOR)
+
+dnl Optional parts of the build.
+AC_SUBST(MOZ_MORK)
+if test "$MOZ_MORK"; then
+  AC_DEFINE(MOZ_MORK)
+fi
+
+dnl Get other versions (for the calendar plugin)
+THUNDERBIRD_VERSION=`cat ${_topsrcdir}/../config/version.txt`
+AC_SUBST(THUNDERBIRD_VERSION)
+
+dnl =========================================================
+dnl = Lightning extension
+dnl =========================================================
+MOZ_ARG_ENABLE_BOOL(calendar,
+[  --enable-calendar      Enable building of the Lightning calendar extension],
+    MOZ_CALENDAR=1,
+    MOZ_CALENDAR= )
+AC_SUBST(MOZ_CALENDAR)
+
+MOZ_ARG_ENABLE_BOOL(incomplete-external-linkage,
+[  --enable-incomplete-external-linkage Changes some comm-central code to be built with external linkage. Developer only option, incomplete broken builds will result - There are already existing bugs for this. ],
+    MOZ_INCOMPLETE_EXTERNAL_LINKAGE=1,
+    MOZ_INCOMPLETE_EXTERNAL_LINKAGE= )
+
+AC_SUBST(MOZ_INCOMPLETE_EXTERNAL_LINKAGE)
+
+dnl =========================================================
+dnl = LDAP
+dnl =========================================================
+MOZ_ARG_DISABLE_BOOL(ldap,
+[  --disable-ldap          Disable LDAP support],
+    MOZ_LDAP_XPCOM=,
+    MOZ_LDAP_XPCOM=1)
+
+AC_SUBST(MOZ_LDAP_XPCOM)
