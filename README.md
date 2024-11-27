@@ -39,7 +39,10 @@ This repository is primarily licensed under the [MPL Version 2.0](http://mozilla
 
 
 ![bmonkey-mac](https://github.com/user-attachments/assets/e58037a8-54de-4ae9-9e84-daede4e96d65)
+Mac
 
 
+![bmonkey-linux](https://github.com/user-attachments/assets/3be3216a-1172-4057-955a-480d9ac9bd53)
+Linux
 
 
