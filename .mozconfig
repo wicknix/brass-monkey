@@ -9,6 +9,7 @@ export CC CXX HOST_CC HOST_CXX RANLIB AR AS LD STRIP OTOOL
 
 #CROSS_COMPILE=1
 ac_add_options --target=x86_64-apple-darwin10.8.0
+#ac_add_options --target=i386-apple-darwin10.8.0
 ac_add_options --enable-macos-target=10.7
 ac_add_options --enable-application=suite
 ac_add_options --with-macos-sdk=/Users/matt/Development/SDKs/MacOSX10.7.sdk
