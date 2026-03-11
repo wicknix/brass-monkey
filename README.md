@@ -39,10 +39,14 @@ This repository is primarily licensed under the [MPL Version 2.0](http://mozilla
 
 
 ![bmonkey-mac](https://github.com/user-attachments/assets/e58037a8-54de-4ae9-9e84-daede4e96d65)
-Mac
+Mac Intel
 
 
 ![bmonkey-linux](https://github.com/user-attachments/assets/3be3216a-1172-4057-955a-480d9ac9bd53)
-Linux
+Linux PowerPC
+
+
+<img width="1920" height="1080" alt="BM-PPC-10 5" src="https://github.com/user-attachments/assets/574d010b-b97e-4293-8d05-2d63bf4f7671" />
+PowerPC Mac OS X 10.5 Leopard
 
 
