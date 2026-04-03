@@ -3,436 +3,437 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "mozilla/ArrayUtils.h"
+
 #include "nsCOMPtr.h"
-#include "nsComponentManagerUtils.h"
-#include "nsDirectoryServiceDefs.h"
-#include "nsDirectoryServiceUtils.h"
 #include "nsGNOMEShellService.h"
-#include "nsServiceManagerUtils.h"
-#include "nsIGSettingsService.h"
-#include "nsIGConfService.h"
-#include "nsIGIOService.h"
+#include "nsIServiceManager.h"
+#include "nsIFile.h"
+#include "nsIProperties.h"
+#include "nsDirectoryServiceDefs.h"
 #include "nsIPrefService.h"
+#include "prenv.h"
+#include "nsStringAPI.h"
+#include "nsIGIOService.h"
+#include "nsIGSettingsService.h"
 #include "nsIStringBundle.h"
+#include "nsIOutputStream.h"
+#include "nsIProcess.h"
+#include "nsServiceManagerUtils.h"
+#include "nsComponentManagerUtils.h"
+#include "nsIDOMHTMLImageElement.h"
 #include "nsIImageLoadingContent.h"
-#include "nsIDOMElement.h"
 #include "imgIRequest.h"
 #include "imgIContainer.h"
+#include "mozilla/Sprintf.h"
+#if defined(MOZ_WIDGET_GTK)
 #include "nsIImageToPixbuf.h"
-#include "nsIFile.h"
-#include "nsIProcess.h"
-#include "prenv.h"
-#include "mozilla/ArrayUtils.h"
+#endif
 #include "nsXULAppAPI.h"
+
 #include <glib.h>
 #include <glib-object.h>
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
+#include <limits.h>
+#include <stdlib.h>
 
-// GConf registry key constants
-#define DG_BACKGROUND "/desktop/gnome/background"
+using namespace mozilla;
 
-#define DGB_OPTIONS DG_BACKGROUND "/picture_options"
-#define DGB_IMAGE DG_BACKGROUND "/picture_filename"
-#define DGB_DRAWBG DG_BACKGROUND "/draw_background"
-#define DGB_COLOR DG_BACKGROUND "/primary_color"
-
-#define OGDB_SCHEMA "org.gnome.desktop.background"
-#define OGDB_OPTIONS "picture-options"
-#define OGDB_IMAGE "picture-uri"
-#define OGDB_DRAWBG "draw-background"
-#define OGDB_COLOR "primary-color"
-
-struct ProtocolAssociation {
-  uint16_t app;
-  const char* protocol;
-};
-
-struct MimeTypeAssociation {
-  uint16_t app;
-  const char* mimeType;
-  const char* extensions;
-};
-
-static const ProtocolAssociation gProtocols[] = {
-  { nsIShellService::BROWSER, "http" },
-  { nsIShellService::BROWSER, "https" },
-  { nsIShellService::MAIL, "mailto" },
-  { nsIShellService::NEWS, "news" },
-  { nsIShellService::NEWS, "snews" },
-  { nsIShellService::RSS, "feed" }
-};
-
-static const MimeTypeAssociation gMimeTypes[] = {
-  { nsIShellService::BROWSER, "text/html", "htm html" },
-  { nsIShellService::BROWSER, "application/xhtml+xml", "xhtml" },
-  { nsIShellService::MAIL, "message/rfc822", "eml" },
-  { nsIShellService::RSS, "application/rss+xml", "rss" }
-};
-
-NS_IMPL_ISUPPORTS(nsGNOMEShellService, nsIShellService)
-
-nsresult
-GetBrandName(nsACString& aBrandName)
+struct ProtocolAssociation
 {
-  // get the product brand name from localized strings
-  nsresult rv;
-  nsCOMPtr<nsIStringBundleService> bundleService(do_GetService("@mozilla.org/intl/stringbundle;1", &rv));
-  NS_ENSURE_SUCCESS(rv, rv);
+  const char *name;
+  bool essential;
+};
 
-  nsCOMPtr<nsIStringBundle> brandBundle;
-  rv = bundleService->CreateBundle(BRAND_PROPERTIES, getter_AddRefs(brandBundle));
-  NS_ENSURE_TRUE(brandBundle, rv);
+struct MimeTypeAssociation
+{
+  const char *mimeType;
+  const char *extensions;
+};
 
-  nsString brandName;
-  rv = brandBundle->GetStringFromName(u"brandShortName",
-                                      getter_Copies(brandName));
-  NS_ENSURE_SUCCESS(rv, rv);
+static const ProtocolAssociation appProtocols[] = {
+  { "http",   true     },
+  { "https",  true     },
+  { "ftp",    false },
+  { "chrome", false }
+};
 
-  CopyUTF16toUTF8(brandName, aBrandName);
-  return rv;
-}
+static const MimeTypeAssociation appTypes[] = {
+  { "text/html",             "htm html shtml" },
+  { "application/xhtml+xml", "xhtml xht"      }
+};
+
+static const char kDesktopBGSchema[] = "org.gnome.desktop.background";
+static const char kDesktopImageGSKey[] = "picture-uri";
+static const char kDesktopOptionGSKey[] = "picture-options";
+static const char kDesktopDrawBGGSKey[] = "draw-background";
+static const char kDesktopColorGSKey[] = "primary-color";
 
 nsresult
 nsGNOMEShellService::Init()
 {
   nsresult rv;
 
+  // GSettings or GIO _must_ be available, or we do not allow
+  // CreateInstance to succeed.
+
+  nsCOMPtr<nsIGIOService> giovfs =
+    do_GetService(NS_GIOSERVICE_CONTRACTID);
+  nsCOMPtr<nsIGSettingsService> gsettings =
+    do_GetService(NS_GSETTINGSSERVICE_CONTRACTID);
+
+  if (!giovfs && !gsettings)
+    return NS_ERROR_NOT_AVAILABLE;
+
   // Check G_BROKEN_FILENAMES.  If it's set, then filenames in glib use
   // the locale encoding.  If it's not set, they use UTF-8.
   mUseLocaleFilenames = PR_GetEnv("G_BROKEN_FILENAMES") != nullptr;
 
-  const char* launcher = PR_GetEnv("MOZ_APP_LAUNCHER");
-  if (launcher) {
-    if (g_path_is_absolute(launcher)) {
-      mAppPath = launcher;
-      gchar* basename = g_path_get_basename(launcher);
-      gchar* fullpath = g_find_program_in_path(basename);
-      mAppIsInPath = fullpath && mAppPath.Equals(fullpath);
-      g_free(fullpath);
-      g_free(basename);
-      return NS_OK;
-    }
+  if (GetAppPathFromLauncher())
+    return NS_OK;
 
-    gchar* fullpath = g_find_program_in_path(launcher);
-    if (fullpath) {
-      mAppPath = fullpath;
-      mAppIsInPath = true;
-      g_free(fullpath);
-      return NS_OK;
-    }
-  }
+  nsCOMPtr<nsIProperties> dirSvc
+    (do_GetService("@mozilla.org/file/directory_service;1"));
+  NS_ENSURE_TRUE(dirSvc, NS_ERROR_NOT_AVAILABLE);
 
   nsCOMPtr<nsIFile> appPath;
-  rv = NS_GetSpecialDirectory(XRE_EXECUTABLE_FILE, getter_AddRefs(appPath));
+  rv = dirSvc->Get(XRE_EXECUTABLE_FILE, NS_GET_IID(nsIFile),
+                   getter_AddRefs(appPath));
   NS_ENSURE_SUCCESS(rv, rv);
 
   return appPath->GetNativePath(mAppPath);
 }
 
+NS_IMPL_ISUPPORTS(nsGNOMEShellService, nsIGNOMEShellService, nsIShellService)
+
 bool
-nsGNOMEShellService::HandlerMatchesAppName(const char* aHandler)
+nsGNOMEShellService::GetAppPathFromLauncher()
 {
-  bool matches = false;
-  gint argc;
-  gchar** argv;
-  if (g_shell_parse_argv(aHandler, &argc, &argv, nullptr) && argc > 0) {
-    gchar* command = nullptr;
-    if (!mUseLocaleFilenames)
-      command = g_find_program_in_path(argv[0]);
-    else {
-      gchar* nativeFile = g_filename_from_utf8(argv[0], -1,
-                                               nullptr, nullptr, nullptr);
-      if (nativeFile) {
-        command = g_find_program_in_path(nativeFile);
-        g_free(nativeFile);
-      }
-    }
-    matches = command && mAppPath.Equals(command);
-    g_free(command);
-    g_strfreev(argv);
+  gchar *tmp;
+
+  const char *launcher = PR_GetEnv("MOZ_APP_LAUNCHER");
+  if (!launcher)
+    return false;
+
+  if (g_path_is_absolute(launcher)) {
+    mAppPath = launcher;
+    tmp = g_path_get_basename(launcher);
+    gchar *fullpath = g_find_program_in_path(tmp);
+    if (fullpath && mAppPath.Equals(fullpath))
+      mAppIsInPath = true;
+    g_free(fullpath);
+  } else {
+    tmp = g_find_program_in_path(launcher);
+    if (!tmp)
+      return false;
+    mAppPath = tmp;
+    mAppIsInPath = true;
   }
 
+  g_free(tmp);
+  return true;
+}
+
+bool
+nsGNOMEShellService::KeyMatchesAppName(const char *aKeyValue) const
+{
+
+  gchar *commandPath;
+  if (mUseLocaleFilenames) {
+    gchar *nativePath = g_filename_from_utf8(aKeyValue, -1,
+                                             nullptr, nullptr, nullptr);
+    if (!nativePath) {
+      NS_ERROR("Error converting path to filesystem encoding");
+      return false;
+    }
+
+    commandPath = g_find_program_in_path(nativePath);
+    g_free(nativePath);
+  } else {
+    commandPath = g_find_program_in_path(aKeyValue);
+  }
+
+  if (!commandPath)
+    return false;
+
+  bool matches = mAppPath.Equals(commandPath);
+  g_free(commandPath);
   return matches;
 }
 
-NS_IMETHODIMP
-nsGNOMEShellService::IsDefaultClient(bool aStartupCheck, uint16_t aApps,
-                                     bool* aIsDefaultClient)
+bool
+nsGNOMEShellService::CheckHandlerMatchesAppName(const nsACString &handler) const
 {
-  if (aStartupCheck)
-    mCheckedThisSessionClient = true;
+  gint argc;
+  gchar **argv;
+  nsAutoCString command(handler);
 
-  *aIsDefaultClient = false;
-  nsCString handler;
-  nsCOMPtr<nsIGIOMimeApp> app;
+  // The string will be something of the form: [/path/to/]browser "%s"
+  // We want to remove all of the parameters and get just the binary name.
+
+  if (g_shell_parse_argv(command.get(), &argc, &argv, nullptr) && argc > 0) {
+    command.Assign(argv[0]);
+    g_strfreev(argv);
+  }
+
+  if (!KeyMatchesAppName(command.get()))
+    return false; // the handler is set to another app
+
+  return true;
+}
+
+NS_IMETHODIMP
+nsGNOMEShellService::IsDefaultBrowser(bool aStartupCheck,
+                                      bool aForAllTypes,
+                                      bool* aIsDefaultBrowser)
+{
+  *aIsDefaultBrowser = false;
+
   nsCOMPtr<nsIGIOService> giovfs = do_GetService(NS_GIOSERVICE_CONTRACTID);
-  nsCOMPtr<nsIGConfService> gconf = do_GetService(NS_GCONFSERVICE_CONTRACTID);
 
-  for (unsigned i = 0; i < mozilla::ArrayLength(gProtocols); i++) {
-    if (aApps & gProtocols[i].app) {
-      nsDependentCString protocol(gProtocols[i].protocol);
-      if (giovfs) {
-        giovfs->GetAppForURIScheme(protocol, getter_AddRefs(app));
-        if (!app)
-          return NS_OK;
+  bool enabled;
+  nsAutoCString handler;
+  nsCOMPtr<nsIGIOMimeApp> gioApp;
 
-        if (NS_SUCCEEDED(app->GetCommand(handler)) &&
-            !HandlerMatchesAppName(handler.get()))
-         return NS_OK;
-      }
+  for (unsigned int i = 0; i < ArrayLength(appProtocols); ++i) {
+    if (!appProtocols[i].essential)
+      continue;
 
-      bool enabled;
-      if (gconf &&
-          NS_SUCCEEDED(gconf->GetAppForProtocol(protocol, &enabled, handler)) &&
-          (!enabled || !HandlerMatchesAppName(handler.get())))
+    if (giovfs) {
+      handler.Truncate();
+      giovfs->GetAppForURIScheme(nsDependentCString(appProtocols[i].name),
+                                 getter_AddRefs(gioApp));
+      if (!gioApp)
         return NS_OK;
+
+      gioApp->GetCommand(handler);
+
+      if (!CheckHandlerMatchesAppName(handler))
+        return NS_OK; // the handler is set to another app
     }
   }
 
-  *aIsDefaultClient = true;
+  *aIsDefaultBrowser = true;
+
   return NS_OK;
 }
 
 NS_IMETHODIMP
-nsGNOMEShellService::SetDefaultClient(bool aForAllUsers,
-                                      bool aClaimAllTypes, uint16_t aApps)
+nsGNOMEShellService::SetDefaultBrowser(bool aClaimAllTypes,
+                                       bool aForAllUsers)
 {
-  nsresult rv;
+#ifdef DEBUG
+  if (aForAllUsers)
+    NS_WARNING("Setting the default browser for all users is not yet supported");
+#endif
 
-  nsCOMPtr<nsIGIOMimeApp> app;
   nsCOMPtr<nsIGIOService> giovfs = do_GetService(NS_GIOSERVICE_CONTRACTID);
   if (giovfs) {
-    nsCString brandName;
-    rv = GetBrandName(brandName);
+    nsresult rv;
+    nsCOMPtr<nsIStringBundleService> bundleService =
+      do_GetService(NS_STRINGBUNDLE_CONTRACTID, &rv);
     NS_ENSURE_SUCCESS(rv, rv);
 
-    rv = giovfs->CreateAppFromCommand(mAppPath, brandName, getter_AddRefs(app));
+    nsCOMPtr<nsIStringBundle> brandBundle;
+    rv = bundleService->CreateBundle(BRAND_PROPERTIES, getter_AddRefs(brandBundle));
     NS_ENSURE_SUCCESS(rv, rv);
 
-    for (unsigned i = 0; i < mozilla::ArrayLength(gMimeTypes); i++) {
-      if (aApps & gMimeTypes[i].app) {
-        rv = app->SetAsDefaultForMimeType(nsDependentCString(gMimeTypes[i].mimeType));
-        NS_ENSURE_SUCCESS(rv, rv);
-        rv = app->SetAsDefaultForFileExtensions(nsDependentCString(gMimeTypes[i].extensions));
-        NS_ENSURE_SUCCESS(rv, rv);
+    nsString brandShortName;
+    brandBundle->GetStringFromName(u"brandShortName",
+                                   getter_Copies(brandShortName));
+
+    // use brandShortName as the application id.
+    NS_ConvertUTF16toUTF8 id(brandShortName);
+    nsCOMPtr<nsIGIOMimeApp> appInfo;
+    rv = giovfs->CreateAppFromCommand(mAppPath,
+                                      id,
+                                      getter_AddRefs(appInfo));
+    NS_ENSURE_SUCCESS(rv, rv);
+
+    // set handler for the protocols
+    for (unsigned int i = 0; i < ArrayLength(appProtocols); ++i) {
+      if (appProtocols[i].essential || aClaimAllTypes) {
+        appInfo->SetAsDefaultForURIScheme(nsDependentCString(appProtocols[i].name));
+      }
+    }
+
+    // set handler for .html and xhtml files and MIME types:
+    if (aClaimAllTypes) {
+      // Add mime types for html, xhtml extension and set app to just created appinfo.
+      for (unsigned int i = 0; i < ArrayLength(appTypes); ++i) {
+        appInfo->SetAsDefaultForMimeType(nsDependentCString(appTypes[i].mimeType));
+        appInfo->SetAsDefaultForFileExtensions(nsDependentCString(appTypes[i].extensions));
       }
     }
   }
 
-  nsCString appKeyValue;
-  nsCOMPtr<nsIGConfService> gconf = do_GetService(NS_GCONFSERVICE_CONTRACTID);
-  if (gconf) {
-    if (!mAppIsInPath)
-      appKeyValue = mAppPath;
-    else {
-      gchar* basename = g_path_get_basename(mAppPath.get());
-      appKeyValue = basename;
-      g_free(basename);
-    }
-    appKeyValue.AppendLiteral(" %s");
-  }
-
-  for (unsigned i = 0; i < mozilla::ArrayLength(gProtocols); i++) {
-    if (aApps & gProtocols[i].app) {
-      nsDependentCString protocol(gProtocols[i].protocol);
-      if (app) {
-        rv = app->SetAsDefaultForURIScheme(protocol);
-        NS_ENSURE_SUCCESS(rv, rv);
-      }
-      if (gconf) {
-        rv = gconf->SetAppForProtocol(protocol, appKeyValue);
-        NS_ENSURE_SUCCESS(rv, rv);
-      }
-    }
+  nsCOMPtr<nsIPrefBranch> prefs(do_GetService(NS_PREFSERVICE_CONTRACTID));
+  if (prefs) {
+    (void) prefs->SetBoolPref(PREF_CHECKDEFAULTBROWSER, true);
+    // Reset the number of times the dialog should be shown
+    // before it is silenced.
+    (void) prefs->SetIntPref(PREF_DEFAULTBROWSERCHECKCOUNT, 0);
   }
 
   return NS_OK;
-}
-
-NS_IMETHODIMP
-nsGNOMEShellService::GetShouldCheckDefaultClient(bool* aResult)
-{
-  if (mCheckedThisSessionClient) {
-    *aResult = false;
-    return NS_OK;
-  }
-
-  nsresult rv;
-  nsCOMPtr<nsIPrefBranch> prefs(do_GetService(NS_PREFSERVICE_CONTRACTID, &rv));
-  NS_ENSURE_SUCCESS(rv, rv);
-  return prefs->GetBoolPref(PREF_CHECKDEFAULTCLIENT, aResult);
-}
-
-NS_IMETHODIMP
-nsGNOMEShellService::SetShouldCheckDefaultClient(bool aShouldCheck)
-{
-  nsresult rv;
-  nsCOMPtr<nsIPrefBranch> prefs(do_GetService(NS_PREFSERVICE_CONTRACTID, &rv));
-  NS_ENSURE_SUCCESS(rv, rv);
-  return prefs->SetBoolPref(PREF_CHECKDEFAULTCLIENT, aShouldCheck);
-}
-
-NS_IMETHODIMP
-nsGNOMEShellService::GetShouldBeDefaultClientFor(uint16_t* aApps)
-{
-  nsresult rv;
-  nsCOMPtr<nsIPrefBranch> prefs(do_GetService(NS_PREFSERVICE_CONTRACTID, &rv));
-  NS_ENSURE_SUCCESS(rv, rv);
-  int32_t result;
-  rv = prefs->GetIntPref("shell.checkDefaultApps", &result);
-  *aApps = result;
-  return rv;
-}
-
-NS_IMETHODIMP
-nsGNOMEShellService::SetShouldBeDefaultClientFor(uint16_t aApps)
-{
-  nsresult rv;
-  nsCOMPtr<nsIPrefBranch> prefs(do_GetService(NS_PREFSERVICE_CONTRACTID, &rv));
-  NS_ENSURE_SUCCESS(rv, rv);
-  return prefs->SetIntPref("shell.checkDefaultApps", aApps);
 }
 
 NS_IMETHODIMP
 nsGNOMEShellService::GetCanSetDesktopBackground(bool* aResult)
 {
-  nsCOMPtr<nsIGConfService> gconf(do_GetService(NS_GCONFSERVICE_CONTRACTID));
-  *aResult = gconf && getenv("GNOME_DESKTOP_SESSION_ID");
+  // setting desktop background is currently only supported
+  // for Gnome or desktops using the same GSettings keys
+  const char *currentDesktop = getenv("XDG_CURRENT_DESKTOP");
+  if (currentDesktop && strstr(currentDesktop, "GNOME") != nullptr) {
+  *aResult = true;
   return NS_OK;
+  }
+  const char* gnomeSession = getenv("GNOME_DESKTOP_SESSION_ID");
+  if (gnomeSession) {
+    *aResult = true;
+  } else {
+    *aResult = false;
+  }
+
+  return NS_OK;
+}
+
+static nsresult
+WriteImage(const nsCString& aPath, imgIContainer* aImage)
+{
+#if !defined(MOZ_WIDGET_GTK)
+  return NS_ERROR_NOT_AVAILABLE;
+#else
+  nsCOMPtr<nsIImageToPixbuf> imgToPixbuf =
+    do_GetService("@mozilla.org/widget/image-to-gdk-pixbuf;1");
+  if (!imgToPixbuf)
+      return NS_ERROR_NOT_AVAILABLE;
+
+  GdkPixbuf* pixbuf = imgToPixbuf->ConvertImageToPixbuf(aImage);
+  if (!pixbuf)
+      return NS_ERROR_NOT_AVAILABLE;
+
+  gboolean res = gdk_pixbuf_save(pixbuf, aPath.get(), "png", nullptr, nullptr);
+
+  g_object_unref(pixbuf);
+  return res ? NS_OK : NS_ERROR_FAILURE;
+#endif
 }
 
 NS_IMETHODIMP
 nsGNOMEShellService::SetDesktopBackground(nsIDOMElement* aElement,
                                           int32_t aPosition)
 {
-  nsCString brandName;
-  nsresult rv = GetBrandName(brandName);
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  // build the file name
-  nsCString filePath(PR_GetEnv("HOME"));
-  filePath.Append('/');
-  filePath.Append(brandName);
-  filePath.AppendLiteral("_wallpaper.png");
+  nsresult rv;
+  nsCOMPtr<nsIImageLoadingContent> imageContent = do_QueryInterface(aElement, &rv);
+  if (!imageContent) return rv;
 
   // get the image container
-  nsCOMPtr<nsIImageLoadingContent> imageContent(do_QueryInterface(aElement, &rv));
-  NS_ENSURE_SUCCESS(rv, rv);
-
   nsCOMPtr<imgIRequest> request;
   rv = imageContent->GetRequest(nsIImageLoadingContent::CURRENT_REQUEST,
                                 getter_AddRefs(request));
-  NS_ENSURE_TRUE(request, rv);
-
+  if (!request) return rv;
   nsCOMPtr<imgIContainer> container;
   rv = request->GetImage(getter_AddRefs(container));
-  NS_ENSURE_TRUE(request, rv);
+  if (!container) return rv;
 
-  nsCOMPtr<nsIImageToPixbuf> imgToPixbuf(do_GetService("@mozilla.org/widget/image-to-gdk-pixbuf;1"));
-  if (!imgToPixbuf)
-    return NS_ERROR_NOT_AVAILABLE;
+  // Set desktop wallpaper filling style
+  nsAutoCString options;
+  if (aPosition == BACKGROUND_TILE)
+    options.AssignLiteral("wallpaper");
+  else if (aPosition == BACKGROUND_STRETCH)
+    options.AssignLiteral("stretched");
+  else if (aPosition == BACKGROUND_FILL)
+    options.AssignLiteral("zoom");
+  else if (aPosition == BACKGROUND_FIT)
+    options.AssignLiteral("scaled");
+  else
+    options.AssignLiteral("centered");
 
-  GdkPixbuf* pixbuf = imgToPixbuf->ConvertImageToPixbuf(container);
-  if (!pixbuf)
-    return NS_ERROR_NOT_AVAILABLE;
+  // Write the background file to the home directory.
+  nsAutoCString filePath(PR_GetEnv("HOME"));
 
-  // write the image to a file in the home dir
-  gboolean res = gdk_pixbuf_save(pixbuf, filePath.get(), "png",
-                                 nullptr, nullptr);
-
-  g_object_unref(pixbuf);
-  if (!res)
-    return NS_ERROR_FAILURE;
-
-  // set desktop wallpaper filling style
-  const char* options;
-  switch (aPosition) {
-    case BACKGROUND_TILE:
-      options = "wallpaper";
-      break;
-    case BACKGROUND_STRETCH:
-      options = "stretched";
-      break;
-    case BACKGROUND_FILL:
-      options = "zoom";
-      break;
-    case BACKGROUND_FIT:
-      options = "scaled";
-      break;
-    default:
-      options = "centered";
-      break;
-  }
-
-  // Try GSettings first. If we don't have GSettings or the right schema, fall back
-  // to using GConf instead. Note that if GSettings works ok, the changes get
-  // mirrored to GConf by the gsettings->gconf bridge in gnome-settings-daemon
-  nsCOMPtr<nsIGSettingsService> gsettings(do_GetService(NS_GSETTINGSSERVICE_CONTRACTID));
-  if (gsettings) {
-    nsCOMPtr<nsIGSettingsCollection> background_settings;
-    gsettings->GetCollectionForSchema(NS_LITERAL_CSTRING(OGDB_SCHEMA),
-                                      getter_AddRefs(background_settings));
-    if (background_settings) {
-      gchar *file_uri = g_filename_to_uri(filePath.get(), nullptr, nullptr);
-      if (!file_uri)
-       return NS_ERROR_FAILURE;
-
-      background_settings->SetString(NS_LITERAL_CSTRING(OGDB_OPTIONS),
-                                     nsDependentCString(options));
-      background_settings->SetString(NS_LITERAL_CSTRING(OGDB_IMAGE),
-                                     nsDependentCString(file_uri));
-      g_free(file_uri);
-      background_settings->SetBoolean(NS_LITERAL_CSTRING(OGDB_DRAWBG), true);
-      return NS_OK;
+  // get the product brand name from localized strings
+  nsString brandName;
+  nsCID bundleCID = NS_STRINGBUNDLESERVICE_CID;
+  nsCOMPtr<nsIStringBundleService> bundleService(do_GetService(bundleCID));
+  if (bundleService) {
+    nsCOMPtr<nsIStringBundle> brandBundle;
+    rv = bundleService->CreateBundle(BRAND_PROPERTIES,
+                                     getter_AddRefs(brandBundle));
+    if (NS_SUCCEEDED(rv) && brandBundle) {
+      rv = brandBundle->GetStringFromName(u"brandShortName",
+                                          getter_Copies(brandName));
+      NS_ENSURE_SUCCESS(rv, rv);
     }
   }
 
-  // if the file was written successfully, set it as the system wallpaper
-  nsCOMPtr<nsIGConfService> gconf(do_GetService(NS_GCONFSERVICE_CONTRACTID));
+  // build the file name
+  filePath.Append('/');
+  filePath.Append(NS_ConvertUTF16toUTF8(brandName));
+  filePath.AppendLiteral("_wallpaper.png");
 
-  if (gconf) {
-    gconf->SetString(NS_LITERAL_CSTRING(DGB_OPTIONS), nsDependentCString(options));
+  // write the image to a file in the home dir
+  rv = WriteImage(filePath, container);
+  NS_ENSURE_SUCCESS(rv, rv);
 
-    // Set the image to an empty string first to force a refresh (since we could
-    // be writing a new image on top of an existing SeaMonkey_wallpaper.png
-    // and nautilus doesn't monitor the file for changes).
-    gconf->SetString(NS_LITERAL_CSTRING(DGB_IMAGE), EmptyCString());
-    gconf->SetString(NS_LITERAL_CSTRING(DGB_IMAGE), filePath);
-    gconf->SetBool(NS_LITERAL_CSTRING(DGB_DRAWBG), true);
+  nsCOMPtr<nsIGSettingsService> gsettings =
+    do_GetService(NS_GSETTINGSSERVICE_CONTRACTID);
+  if (gsettings) {
+    nsCOMPtr<nsIGSettingsCollection> background_settings;
+    gsettings->GetCollectionForSchema(
+      NS_LITERAL_CSTRING(kDesktopBGSchema), getter_AddRefs(background_settings));
+    if (background_settings) {
+      gchar *file_uri = g_filename_to_uri(filePath.get(), nullptr, nullptr);
+      if (!file_uri)
+         return NS_ERROR_FAILURE;
+
+      background_settings->SetString(NS_LITERAL_CSTRING(kDesktopOptionGSKey),
+                                     options);
+
+      background_settings->SetString(NS_LITERAL_CSTRING(kDesktopImageGSKey),
+                                     nsDependentCString(file_uri));
+      g_free(file_uri);
+      background_settings->SetBoolean(NS_LITERAL_CSTRING(kDesktopDrawBGGSKey),
+                                      true);
+      return rv;
+    }
   }
 
-  return NS_OK;
+  return NS_ERROR_FAILURE;
 }
 
 #define COLOR_16_TO_8_BIT(_c) ((_c) >> 8)
+#define COLOR_8_TO_16_BIT(_c) ((_c) << 8 | (_c))
 
 NS_IMETHODIMP
 nsGNOMEShellService::GetDesktopBackgroundColor(uint32_t *aColor)
 {
-  nsCOMPtr<nsIGSettingsService> gsettings(do_GetService(NS_GSETTINGSSERVICE_CONTRACTID));
+  nsCOMPtr<nsIGSettingsService> gsettings =
+    do_GetService(NS_GSETTINGSSERVICE_CONTRACTID);
   nsCOMPtr<nsIGSettingsCollection> background_settings;
+  nsAutoCString background;
 
-  if (gsettings)
-    gsettings->GetCollectionForSchema(NS_LITERAL_CSTRING(OGDB_SCHEMA),
-                                      getter_AddRefs(background_settings));
-
-  nsCString background;
-  if (background_settings)
-    background_settings->GetString(NS_LITERAL_CSTRING(OGDB_COLOR),
-                                   background);
-  else {
-    nsCOMPtr<nsIGConfService> gconf(do_GetService(NS_GCONFSERVICE_CONTRACTID));
-    if (gconf)
-      gconf->GetString(NS_LITERAL_CSTRING(DGB_COLOR), background);
+  if (gsettings) {
+    gsettings->GetCollectionForSchema(
+      NS_LITERAL_CSTRING(kDesktopBGSchema), getter_AddRefs(background_settings));
+    if (background_settings) {
+      background_settings->GetString(NS_LITERAL_CSTRING(kDesktopColorGSKey),
+                                     background);
+    }
   }
 
-  if (background.IsEmpty())
-    return NS_ERROR_FAILURE;
+  if (background.IsEmpty()) {
+    *aColor = 0;
+    return NS_OK;
+  }
 
   GdkColor color;
-  NS_ENSURE_TRUE(gdk_color_parse(background.get(), &color), NS_ERROR_FAILURE);
+  gboolean success = gdk_color_parse(background.get(), &color);
+
+  NS_ENSURE_TRUE(success, NS_ERROR_FAILURE);
 
   *aColor = COLOR_16_TO_8_BIT(color.red) << 16 |
             COLOR_16_TO_8_BIT(color.green) << 8 |
@@ -440,37 +441,64 @@ nsGNOMEShellService::GetDesktopBackgroundColor(uint32_t *aColor)
   return NS_OK;
 }
 
-#define COLOR_8_TO_16_BIT(_c) ((_c) << 8 | (_c))
+static void
+ColorToCString(uint32_t aColor, nsCString& aResult)
+{
+  // The #rrrrggggbbbb format is used to match gdk_color_to_string()
+  char *buf = aResult.BeginWriting(13);
+  if (!buf)
+    return;
+
+  uint16_t red = COLOR_8_TO_16_BIT((aColor >> 16) & 0xff);
+  uint16_t green = COLOR_8_TO_16_BIT((aColor >> 8) & 0xff);
+  uint16_t blue = COLOR_8_TO_16_BIT(aColor & 0xff);
+
+  snprintf(buf, 14, "#%04x%04x%04x", red, green, blue);
+}
 
 NS_IMETHODIMP
 nsGNOMEShellService::SetDesktopBackgroundColor(uint32_t aColor)
 {
-  NS_ENSURE_ARG_MAX(aColor, 0xFFFFFF);
+  NS_ASSERTION(aColor <= 0xffffff, "aColor has extra bits");
+  nsAutoCString colorString;
+  ColorToCString(aColor, colorString);
 
-  uint8_t red = aColor >> 16;
-  uint8_t green = aColor >> 8;
-  uint8_t blue = aColor;
-  char colorString[14];
-  sprintf(colorString, "#%04x%04x%04x", COLOR_8_TO_16_BIT(red),
-          COLOR_8_TO_16_BIT(green), COLOR_8_TO_16_BIT(blue));
-
-  nsCOMPtr<nsIGSettingsService> gsettings(do_GetService(NS_GSETTINGSSERVICE_CONTRACTID));
+  nsCOMPtr<nsIGSettingsService> gsettings =
+    do_GetService(NS_GSETTINGSSERVICE_CONTRACTID);
   if (gsettings) {
     nsCOMPtr<nsIGSettingsCollection> background_settings;
-    gsettings->GetCollectionForSchema(NS_LITERAL_CSTRING(OGDB_SCHEMA),
-                                      getter_AddRefs(background_settings));
+    gsettings->GetCollectionForSchema(
+      NS_LITERAL_CSTRING(kDesktopBGSchema), getter_AddRefs(background_settings));
     if (background_settings) {
-      background_settings->SetString(NS_LITERAL_CSTRING(OGDB_COLOR),
-                                     nsDependentCString(colorString));
+      background_settings->SetString(NS_LITERAL_CSTRING(kDesktopColorGSKey),
+                                     colorString);
       return NS_OK;
     }
   }
 
-  nsCOMPtr<nsIGConfService> gconf = do_GetService(NS_GCONFSERVICE_CONTRACTID);
-  if (gconf)
-    gconf->SetString(NS_LITERAL_CSTRING(DGB_COLOR), nsDependentCString(colorString));
+  return NS_ERROR_FAILURE;
+}
 
-  return NS_OK;
+NS_IMETHODIMP
+nsGNOMEShellService::OpenApplication(int32_t aApplication)
+{
+  nsAutoCString scheme;
+  if (aApplication == APPLICATION_MAIL)
+    scheme.AssignLiteral("mailto");
+  else if (aApplication == APPLICATION_NEWS)
+    scheme.AssignLiteral("news");
+  else
+    return NS_ERROR_NOT_AVAILABLE;
+
+  nsCOMPtr<nsIGIOService> giovfs = do_GetService(NS_GIOSERVICE_CONTRACTID);
+  if (giovfs) {
+    nsCOMPtr<nsIGIOMimeApp> gioApp;
+    giovfs->GetAppForURIScheme(scheme, getter_AddRefs(gioApp));
+    if (gioApp)
+      return gioApp->Launch(EmptyCString());
+  }
+
+  return NS_ERROR_FAILURE;
 }
 
 NS_IMETHODIMP
@@ -486,7 +514,7 @@ nsGNOMEShellService::OpenApplicationWithURI(nsIFile* aApplication, const nsACStr
   if (NS_FAILED(rv))
     return rv;
 
-  const nsCString& spec = PromiseFlatCString(aURI);
+  const nsCString spec(aURI);
   const char* specStr = spec.get();
   return process->Run(false, &specStr, 1);
 }
